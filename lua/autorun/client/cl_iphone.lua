@@ -1,0 +1,460 @@
+surface.CreateFont('iphone_time', {
+	font = 'Calibri',
+	size = 24,
+})
+
+surface.CreateFont('iphone_appname', {
+	font = 'Calibri',
+	size = 22,
+})
+
+surface.CreateFont('iphone_title', {
+	font = 'Calibri',
+	size = 46,
+	weight = 1200,
+})
+
+surface.CreateFont('iphone_call', { 
+	font = 'Calibri',
+	size = 28,
+	weight = 600,
+})
+
+surface.CreateFont('iphone_medium', {
+	font = 'Calibri',
+	size = 34, 
+	weight = 600,
+})
+
+surface.CreateFont('iphone_contact', {
+	font = 'Calibri',
+	size = 32,
+})
+
+surface.CreateFont('iphone_contact_bold', {
+	font = 'Calibri',
+	size = 32,
+	weight = 1200,
+})
+
+surface.CreateFont('iphone_search', {
+	font = 'Calibri',
+	size = 26,
+	weight = 900,
+})
+
+local circularInit = function(panel, dark)
+	local circle
+	ImgLoader.LoadMaterial('materials/elysion/iphone/' .. (dark and 'player_img' or 'circle') .. '.png', function(mat)
+		circle = mat
+	end)
+	
+	function panel:PaintOver(w, h)
+		if circle then
+			surface.SetDrawColor(self.circleColor or color_white)
+			surface.SetMaterial(circle)
+			surface.DrawTexturedRect(0, 0, w, h)
+		end
+	end
+end
+
+iPhone = {--iPhone or {
+	width = 350,
+	height = 725,
+	iconSize = 73,
+	getNumber = function(ply)
+		local stm = ply:SteamID64()
+		local num = '06' .. stm:sub(stm:len() - 7)
+		local k
+		while true do
+			num, k = string.gsub(num, "^(-?%d+)(%d%d)", "%1 %2")
+			if k == 0 then break end
+		end
+
+		return num
+	end,
+	getPlayerByNumber = function(num)
+		for _, ply in ipairs(player.GetAll()) do
+			if string.Replace(iPhone.getNumber(ply), ' ', '') == string.Replace(num, ' ', '') then
+				return ply
+			end
+		end
+	end,
+	appOpen = function(self)
+		local startX, startY = self:GetPos()
+		self:SetZPos(self:GetZPos() + 1)
+		self.Hovered = false
+		iPhone.appOpening = self.app
+		self:NewAnimation(0.3, 0, -1, function(t, pnl)
+			iPhone.appCreate(pnl.app, function()
+				pnl:SetSize(iPhone.iconSize, iPhone.iconSize)
+				pnl:SetPos(pnl.app.pos_x, pnl.app.pos_y)
+				pnl.openAnimFraction = 0
+			end)
+			self:SetZPos(self:GetZPos() - 1)
+		end).Think = function(anim, pnl, fraction)
+			self:SetSize(iPhone.iconSize + fraction * (iPhone.width - iPhone.iconSize), iPhone.iconSize + fraction * (iPhone.height - iPhone.iconSize - 28))
+			self:SetPos(startX - fraction * startX, startY - fraction * (startY - 28))
+			self.openAnimFraction = fraction
+			self:GetParent().openAnimFraction = fraction
+		end
+	end,
+	appCreate = function(app, callback, ...)
+		local window = vgui.Create('EditablePanel', iPhone.panel)
+		window:SetZPos(window:GetZPos() + 20)
+		window:SetSize(iPhone.width, iPhone.height - 28)
+		window.app = app
+		window.closingFraction = 0
+
+		function window:Paint(w, h)
+			--draw.RoundedBoxEx(48, 0, 64, w, h - 64, self.app.bgColor or Color(245, 245, 245), false, false, true, true)
+			--draw.RoundedBoxEx(6 + math.min(42, 42 * (self.closingFraction*4)), 0, 0, w, 64, self.app.bgColor or Color(245, 245, 245), true, true, false, false)
+
+			if not self.app.noTitle and self.app.name then
+				draw.SimpleText(self.app.name, 'iphone_title', 16, 20, Color(16, 16, 16, (1 - self.closingFraction*2.5) * 255))
+			end
+		end
+
+		window:SetPos(0, 28)
+		window:SetAlpha(0)
+		window:AlphaTo(255, 0.2, 0.1, callback)
+
+		if not app.hideHomeBar then
+			local homeBar = vgui.Create('DButton', window)
+			homeBar:SetSize(300, 40)
+			homeBar:SetPos(iPhone.width/2 - 150, window:GetTall() - 28)
+			homeBar.color = app.homeBarColor or Color(96, 96, 96)
+			function homeBar:Paint(w, h)
+				iPhone.cursorUpdate(self)
+				draw.RoundedBox(8, 50, 12, w-100, 10, self.Hovered and self.color or ColorAlpha(self.color, 200))
+				return true
+			end
+
+			function homeBar:OnMousePressed()
+				iPhone.appClose(window)
+				local posx, posy = self:GetPos()
+				self:MoveTo(posx, posy - 50, 0.15)
+			end
+		end
+
+		if app.init then
+			local success, errors = pcall(app.init, window, ...)
+			if not success then
+				ErrorNoHalt(errors)
+			end
+		end
+
+		table.insert(iPhone.appsOpened, window)
+		return window
+	end,
+	appDisableInput = function(panel)
+		panel.CursorDisabled = true
+		for k, v in ipairs(panel:GetChildren()) do
+			iPhone.appDisableInput(v)
+		end
+	end,
+	appClose = function(window, secondary)
+		if not window then
+			window = iPhone.appsOpened[#iPhone.appsOpened]
+			if not window then
+				return
+			end
+		end
+
+		local startW, startH = window:GetSize()
+		local startX, startY = window:GetPos()
+		local changeX, changeY
+		if not secondary and window.app.icon then
+			changeX, changeY = window.app.pos_x - startX, window.app.pos_y - startY
+		end
+		
+		iPhone.appDisableInput(window)
+		for k, v in ipairs(window:GetChildren()) do
+			v:AlphaTo(0, 0.15, 0, function(_, pnl)
+				pnl:Remove()
+			end)
+		end
+
+		window:NewAnimation(0.4, 0.15, -1, function(t, pnl)
+			table.RemoveByValue(iPhone.appsOpened, window)
+			window:Remove()
+		end).Think = function(anim, pnl, fraction)
+			if changeX then
+				window:SetSize(startW * (1-fraction), startH * (1-fraction))
+				window:SetPos(startX + fraction * changeX, startY + fraction * changeY)
+			end
+			window:SetAlpha((1 - fraction*1.6) * 255)
+			window.closingFraction = fraction
+			if not secondary then iPhone.panel.openAnimFraction = 1 - fraction end
+		end
+	end,
+	appByName = function(name)
+		for i, app in pairs(iPhone.apps) do
+			if app.name == name then
+				return app
+			end
+		end
+	end,
+	appSwitch = function(window, app, ...)
+		iPhone.appDisableInput(window)
+		local newWindow = iPhone.appCreate(app, function()
+			iPhone.appOpening = app
+		end, ...)
+
+		iPhone.appClose(window, true)
+		newWindow:SetZPos(newWindow:GetZPos() + 1)
+	end,
+	createScreen = function()
+		if not IsValid(iPhone.panel) then
+			iPhone.appsOpened = {}
+	
+			local f = vgui.Create('EditablePanel')
+			f:SetPaintedManually(true)
+			f:SetSize(350, 725)
+			f.openAnimFraction = 0
+			f:SetAlpha(0)
+			f:AlphaTo(255, 0.15, 0.4)
+			iPhone.panel = f
+	
+			local bgMat
+			ImgLoader.LoadMaterial('materials/elysion/iphone/BACKGROUNDTEST.png', function(mat)
+				bgMat = mat
+			end)
+
+			local bgWhiteMat
+			ImgLoader.LoadMaterial('materials/elysion/iphone/whitebackground.png', function(mat)
+				bgWhiteMat = mat
+			end)
+
+			function f:Paint(w, h)
+				if bgMat and self.openAnimFraction < 1 then
+					surface.SetDrawColor(255, 255, 255)
+					surface.SetMaterial(bgMat)
+					surface.DrawTexturedRect(0, 0, w, h)
+				end
+	
+				if self.openAnimFraction > 0 and bgWhiteMat then
+					--draw.RoundedBox(32, 0, 0, w, h, Color(15, 15, 15, self.openAnimFraction * 255))
+					local clr = iPhone.appOpening and iPhone.appOpening.bgColor or Color(245, 245, 245)
+					surface.SetDrawColor(clr.r, clr.g, clr.b, self.openAnimFraction * 510 - 255)
+					surface.SetMaterial(bgWhiteMat)
+					surface.DrawTexturedRect(0, 0, w, h)
+				end
+
+				local clrMod = 240 - self.openAnimFraction*240
+				draw.SimpleText(os.date('%H:%M', os.time()), 'iphone_time', 50, 17, Color(clrMod, clrMod, clrMod, iPhone.panel:GetAlpha()), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+			
+			for i, app in pairs(iPhone.apps) do
+				if not app.icon then continue end
+	
+				local b = vgui.Create('DButton', f)
+				b:SetSize(iPhone.iconSize, iPhone.iconSize)
+				b:SetPos(app.pos_x, app.pos_y)
+				b.app = app
+	
+				local appMat
+				ImgLoader.LoadMaterial('materials/elysion/iphone/' .. app.icon .. '.png', function(mat)
+					appMat = mat
+				end)
+				
+				b.openAnimFraction = 0
+				function b:Paint(w, h)
+					if f.openAnimFraction == 1 then
+						return true
+					end
+					
+					if #iPhone.appsOpened == 0 and f.openAnimFraction == 0 then
+						iPhone.cursorUpdate(self)
+					end
+	
+					if appMat then
+						if self.Hovered then
+							surface.SetDrawColor(200, 200, 200)
+						else
+							surface.SetDrawColor(255, 255, 255, 255 - f.openAnimFraction * 255)
+						end
+					
+						surface.SetMaterial(appMat)
+						surface.DrawTexturedRect(0, 0, w, w)
+					end
+
+					local frac = self.openAnimFraction
+					if frac > 0 then
+						local stretch = frac * 28
+						local clr = ColorAlpha(self.app.bgColor or Color(245, 245, 245), frac * 350)
+						draw.RoundedBoxEx(48, 0, 64, w, h - 64, clr, false, false, true, true)
+						draw.RoundedBoxEx(48*(1 - frac*frac*frac*0.8125), 0, 0, w, 64, clr, true, true, false, false)
+					end
+
+					if self.app.name and self.app.pos_y < 600 then
+						draw.SimpleText(self.app.name, 'iphone_appname', w/2, h, color_white, TEXT_ALIGN_CENTER)
+					end
+	
+					return true
+				end
+	
+				b.DoClick = iPhone.appOpen
+			end
+		end
+	end,
+	cursorUpdate = cursorUpdate,
+	circularInit = circularInit,
+	messages = {},
+	saveMessages = function()
+		file.Write('iphone_messages.txt', util.TableToJSON(iPhone.messages))
+	end,
+	deepweb_messages = {},
+	call_history = {},
+	saveHistory = function()
+		file.Write('iphone_history.txt', util.TableToJSON(iPhone.call_history))
+	end,
+	contacts = {},
+	saveContacts = function()
+		file.Write('iphone_contacts.txt', util.TableToJSON(iPhone.contacts))
+	end,
+	AddApplication = function(self, id)
+		local newApp = {}
+
+		if id then
+			self.apps[id] = newApp
+		else
+			table.insert(self.apps, newApp)
+		end
+
+		return newApp
+	end,
+	call = function(number)
+		if not isstring(number) or number:StartWith('06') then
+			local ply
+			if isstring(number) then
+				ply = iPhone.getPlayerByNumber(number) 
+			elseif IsValid(number) and number:IsPlayer() then
+				ply = number
+			end
+
+			if not ply then
+				chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, number .. ' is OFFLINE')
+			else
+				iPhone.playerCalling = ply
+				iPhone.appSwitch(iPhone.appsOpened[#iPhone.appsOpened], iPhone.apps['calling'])
+
+				net.Start('iPhone')
+				net.WriteString('call')
+				net.WriteEntity(ply)
+				net.SendToServer()
+			end
+		else
+			iPhone.playerCalling = number
+			iPhone.appSwitch(iPhone.appsOpened[#iPhone.appsOpened], iPhone.apps['calling'])
+
+			net.Start('iPhone')
+			net.WriteString('code')
+			net.WriteString(number)
+			net.SendToServer()
+		end
+	end
+}
+
+iPhone.apps = {
+	/*{
+		icon = 'photo_appli_icon',
+		pos_x = 100,
+		pos_y = 50,
+	},*/
+}
+
+if file.Exists('iphone_messages.txt', 'DATA') then
+	iPhone.messages = util.JSONToTable(file.Read('iphone_messages.txt', 'DATA'))
+end
+
+if file.Exists('iphone_history.txt', 'DATA') then
+	iPhone.call_history = util.JSONToTable(file.Read('iphone_history.txt', 'DATA'))
+end
+
+if file.Exists('iphone_contacts.txt', 'DATA') then
+	iPhone.contacts = util.JSONToTable(file.Read('iphone_contacts.txt', 'DATA'))
+end
+
+local env = getfenv()
+for _, file in pairs(file.Find('iphone/*', 'LUA')) do
+	env.App = iPhone:AddApplication(string.StripExtension(file))
+	include('iphone/' .. file)
+end
+env.App = nil
+
+net.Receive('iPhone', function()
+	local id = net.ReadString()
+
+	if id == 'msg' then
+		local from = net.ReadEntity()
+		local msg = net.ReadString()
+
+		local id = iPhone.getNumber(from)
+		iPhone.messages[id] = iPhone.messages[id] or {}
+		table.insert(iPhone.messages[id], {text = msg})
+		iPhone.messages[id].last = os.time()
+		iPhone.saveMessages()
+
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, "You've got a new message from " .. from:GetName())
+		if iPhone.playerMessaging == from and iPhone.newMessage then
+			iPhone.newMessage(msg)
+		end
+
+		if not iPhone.silenced then
+			surface.PlaySound('iphone/msg.mp3')
+		end
+	elseif id == 'deepmsg' then
+		local from = net.ReadEntity()
+		local msg = net.ReadString()
+
+		local id = iPhone.getNumber(from)
+		iPhone.deepweb_messages[id] = iPhone.deepweb_messages[id] or {}
+		table.insert(iPhone.deepweb_messages[id], {text = msg})
+		iPhone.deepweb_messages[id].last = os.time()
+		iPhone.saveMessages()
+
+		chat.AddText(Color(139, 40, 255), '[iPhone] ', color_white, "You've got a new message in DeepWeb")
+		if iPhone.playerDeepMessaging == from and iPhone.newDeepMessage then
+			iPhone.newDeepMessage(msg)
+		end
+
+		if not iPhone.silenced then
+			surface.PlaySound('iphone/msg.mp3')
+		end
+	elseif id == 'call' then
+		iPhone.appClose()
+		local from = net.ReadEntity()
+		iPhone.playerCalling = from
+		local newWindow = iPhone.appCreate(iPhone.apps['call'])
+		newWindow:SetZPos(newWindow:GetZPos() + 10)
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, from:GetName() .. ' is calling you')
+		iPhone.call_history[iPhone.getNumber(from)] = {time = os.time(), missed = true}
+		iPhone.saveHistory()
+
+		if not iPhone.silenced then
+			if iPhone.ringtone then iPhone.ringtone:Stop() end
+
+			iPhone.ringtone = CreateSound(LocalPlayer(), 'iphone/ring.mp3')
+			iPhone.ringtone:SetSoundLevel(0)
+			iPhone.ringtone:Play()
+		end
+	elseif id == 'endcall' then
+		for k, window in pairs(iPhone.appsOpened) do
+			if window.app.call then
+				iPhone.appClose(window)
+			end
+		end
+
+		iPhone.callAnswered = nil
+		
+		if iPhone.ringtone then
+			iPhone.ringtone:Stop()
+		end
+	elseif id == 'anscall' then
+		iPhone.callAnswered = SysTime()
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, iPhone.playerCalling:GetName() .. ' has answered your call.')
+	end
+end)
+
+hook.Call('iPhoneInitialized', nil, iPhone)

@@ -25,6 +25,7 @@ App.init = function(window, contact, ply)
 	end
 
 	function save:DoClick()
+		contact.num = contact.num:Replace(' ', '')
 		table.insert(iPhone.contacts, contact)
 		iPhone.saveContacts()
 

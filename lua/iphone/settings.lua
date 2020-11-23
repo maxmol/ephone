@@ -1,6 +1,6 @@
 App.name = 'Settings'
 App.icon = 'settings_icon'
-App.pos_x = 100
+App.pos_x = 16 -- 100
 App.pos_y = 50
 
 local createSlider = function(parent, x, y, callback)

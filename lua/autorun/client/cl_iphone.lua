@@ -244,6 +244,35 @@ iPhone = {--iPhone or {
 				local clrMod = 240 - self.openAnimFraction*240
 				draw.SimpleText(os.date('%H:%M', os.time()), 'iphone_time', 50, 17, Color(clrMod, clrMod, clrMod, iPhone.panel:GetAlpha()), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
+
+			for i, widget in pairs(iPhone.widgets) do
+				local b = vgui.Create('DButton', f)
+				b:SetSize(widget.w, widget.h)
+				b:SetPos(widget.pos_x, widget.pos_y)
+	
+				local bgMat
+				ImgLoader.LoadMaterial('materials/elysion/iphone/' .. widget.bg .. '.png', function(mat)
+					bgMat = mat
+				end)
+
+				function b:Paint(w, h)
+					if f.openAnimFraction == 1 then
+						return true
+					end
+
+					if #iPhone.appsOpened == 0 and f.openAnimFraction == 0 then
+						iPhone.cursorUpdate(self)
+					end
+
+					if bgMat then
+						surface.SetDrawColor(255, 255, 255, 255 - f.openAnimFraction * 255)
+						surface.SetMaterial(bgMat)
+						surface.DrawTexturedRect(0, 0, w, h)
+					end
+
+					return true
+				end
+			end
 			
 			for i, app in pairs(iPhone.apps) do
 				if not app.icon then continue end
@@ -334,7 +363,7 @@ iPhone = {--iPhone or {
 			end
 
 			if not ply then
-				chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, number .. ' is OFFLINE')
+				chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, number .. ' est hors-ligne')
 			else
 				iPhone.playerCalling = ply
 				iPhone.appSwitch(iPhone.appsOpened[#iPhone.appsOpened], iPhone.apps['calling'])
@@ -353,7 +382,22 @@ iPhone = {--iPhone or {
 			net.WriteString(number)
 			net.SendToServer()
 		end
-	end
+	end,
+	receiveMessage = function(num, msg)
+		iPhone.messages[num] = iPhone.messages[num] or {}
+		table.insert(iPhone.messages[num], {text = msg})
+		iPhone.messages[num].last = os.time()
+		iPhone.saveMessages()
+
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, "Vous avez reçu un message de " .. num)
+		if iPhone.playerMessaging == num and iPhone.newMessage then
+			iPhone.newMessage(msg)
+		end
+
+		if not iPhone.silenced then
+			surface.PlaySound('iphone/msg.mp3')
+		end
+	end,
 }
 
 iPhone.apps = {
@@ -362,6 +406,16 @@ iPhone.apps = {
 		pos_x = 100,
 		pos_y = 50,
 	},*/
+}
+
+iPhone.widgets = {
+	/*{
+		bg = 'widget test',
+		pos_x = 23,
+		pos_y = 180,
+		w = 139,
+		h = 149,
+	}*/
 }
 
 if file.Exists('iphone_messages.txt', 'DATA') then
@@ -396,7 +450,7 @@ net.Receive('iPhone', function()
 		iPhone.messages[id].last = os.time()
 		iPhone.saveMessages()
 
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, "You've got a new message from " .. from:GetName())
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, "Vous avez reçu un message de " .. from:GetName())
 		if iPhone.playerMessaging == from and iPhone.newMessage then
 			iPhone.newMessage(msg)
 		end
@@ -404,6 +458,11 @@ net.Receive('iPhone', function()
 		if not iPhone.silenced then
 			surface.PlaySound('iphone/msg.mp3')
 		end
+	elseif id == 'msgnum' then
+		local num = net.ReadString()
+		local msg = net.ReadString()
+		
+		receiveMessage(num, msg)
 	elseif id == 'deepmsg' then
 		local from = net.ReadEntity()
 		local msg = net.ReadString()
@@ -414,7 +473,7 @@ net.Receive('iPhone', function()
 		iPhone.deepweb_messages[id].last = os.time()
 		iPhone.saveMessages()
 
-		chat.AddText(Color(139, 40, 255), '[iPhone] ', color_white, "You've got a new message in DeepWeb")
+		chat.AddText(Color(139, 40, 255), '[iPhone] ', color_white, "Vous avez reçu un message du Darkchat")
 		if iPhone.playerDeepMessaging == from and iPhone.newDeepMessage then
 			iPhone.newDeepMessage(msg)
 		end
@@ -428,7 +487,7 @@ net.Receive('iPhone', function()
 		iPhone.playerCalling = from
 		local newWindow = iPhone.appCreate(iPhone.apps['call'])
 		newWindow:SetZPos(newWindow:GetZPos() + 10)
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, from:GetName() .. ' is calling you')
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, from:GetName() .. ' vous apelle')
 		iPhone.call_history[iPhone.getNumber(from)] = {time = os.time(), missed = true}
 		iPhone.saveHistory()
 
@@ -453,7 +512,7 @@ net.Receive('iPhone', function()
 		end
 	elseif id == 'anscall' then
 		iPhone.callAnswered = SysTime()
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, iPhone.playerCalling:GetName() .. ' has answered your call.')
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, iPhone.playerCalling:GetName() .. ' vous a répondu.')
 	end
 end)
 

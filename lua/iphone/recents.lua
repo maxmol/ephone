@@ -94,7 +94,7 @@ App.init = function(window)
 		end
 	end
 
-	createSwitch(window, iPhone.width/2 - 75, 80, 'All', 'Missed', function(missed)
+	createSwitch(window, iPhone.width/2 - 75, 80, 'Tous', 'Manqués', function(missed)
 		for _, btn in ipairs(window.contactButtons) do
 			if missed and (not iPhone.call_history[btn.id] or not iPhone.call_history[btn.id].missed) then
 				btn:Hide()

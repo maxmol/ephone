@@ -41,9 +41,9 @@ App.init = function(window)
 		if self.Hovered then
 			surface.SetDrawColor(self.hoverColor)
 			surface.DrawRect(0, 0, w, h-4)
-			self.ava.circleColor = self.hoverColor
+			if self.ava then self.ava.circleColor = self.hoverColor end
 		else
-			self.ava.circleColor = color_white
+			if self.ava then self.ava.circleColor = color_white end
 		end
 		
 		draw.SimpleText(self.name, 'iphone_contact_bold', 104, 12, Color(16, 16, 16))
@@ -65,16 +65,37 @@ App.init = function(window)
 		b.Paint = bPaint
 		b.ply = ply
 		b.id = id
-		b.name = ply and ply:GetName() or id
+		local contactNum = string.Replace(id, ' ', '')
+		b.name = ply and ply:GetName() or (iPhone.contacts[contactNum] and iPhone.contacts[contactNum].name or id)
 		b.hoverColor = Color(240, 240, 240)
 		table.insert(window.contactButtons, b)
 
-		local ava = vgui.Create("AvatarImage", b)
-		ava:SetSize(64, 64)
-		ava:SetPos(20, 13)
-		if ply then ava:SetPlayer(ply, 64) end
-		iPhone.circularInit(ava)
-		b.ava = ava
+		local ava
+		if ply then 
+			ava = vgui.Create('AvatarImage', b)
+			ava:SetPlayer(ply, 64)
+			iPhone.circularInit(ava)
+			b.ava = ava
+		elseif id == 'Sergay' then
+			local sergay
+			ImgLoader.LoadMaterial('materials/elysion/iphone/sergay.png', function(mat)
+				sergay = mat
+			end)
+
+			ava = vgui.Create('Panel', b)
+			ava.Paint = function(self, w, h)
+				if sergay then
+					surface.SetDrawColor(255, 255, 255)
+					surface.SetMaterial(sergay)
+					surface.DrawTexturedRect(0, 0, w, h)
+				end
+			end
+		end
+
+		if ava then
+			ava:SetSize(64, 64)
+			ava:SetPos(20, 13)
+		end
 
 		function b:DoClick()
 			iPhone.playerMessaging = IsValid(self.ply) and self.ply or self.id

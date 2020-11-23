@@ -125,7 +125,7 @@ App.init = function(window)
 
 		local text 
 		if offline then
-			text = 'OFFLINE'
+			text = 'HORS LIGNE'
 		else
 			text = IsValid(self.textEntry) and self.textEntry:GetValue() or 'Message'
 		end

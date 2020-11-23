@@ -2,17 +2,17 @@ local config = {
 	{
 		name = 'Tueur à gages',
 		team = '*VIP* Mercenaire',
-		desc = [[Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.]],
+		desc = [[Prenez contact avec les meilleurs tueurs à gages.]],
 	},
 	{
 		name = 'Hackeurs',
-		team = 'Гражданин',
-		desc = [[Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.]],
+		team = '*VIP* Mercenaire',
+		desc = [[Besoin de s'introduire dans un serveur ? Vous êtes au bon endroit.]],
 	},
 	{
 		name = 'Mercenaires',
-		team = 'Гражданин',
-		desc = [[Lorem ipsum dolor sit amet, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.]],
+		team = '*VIP* Mercenaire',
+		desc = [[Prennez contact avec un Mercenaire pour votre protection.]],
 	},
 }
 

@@ -8,12 +8,13 @@ iPhone = iPhone or {
 	calls = {},
 	codes = {
 		['222'] = function(ply)
-			ply:ChatPrint('hello :)')
-		end
+			DDrugs.CallCoke(0, ply)
+		end,
+		['666'] = function(ply)
+			DDrugs.CallHero(0, ply)
+		end,
 	}
 }
-
-iPhone.codes['666'] = iPhone.codes['222']
 
 local canHear = {}
 
@@ -73,7 +74,7 @@ net.Receive('iPhone', function(len, from)
 		end
 
 		if IsValid(iPhone.calls[to]) then
-			from:ChatPrint('That person is already in a call') -- visual
+			from:ChatPrint('Cette personne est occupé') -- visual
 			net.Start('iPhone')
 				net.WriteString('endcall')
 			net.Send(from)

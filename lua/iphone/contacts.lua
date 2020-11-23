@@ -139,7 +139,7 @@ local createBottomButtons = function(window, current)
 
 	recents:SetPos(50, window:GetTall() - 82)
 	recents:SetSize(62, 50)
-	recents.text = 'Recents'
+	recents.text = 'Récents'
 	recents.num = 1
 	function recents:Paint(w, h)
 		if not self.mat then return end
@@ -234,7 +234,7 @@ App.init = function(window)
 		draw.SimpleText('SMS', 'iphone_search', self.open - 108, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
 
 		draw.RoundedBox(8, self.open - 212, 10, 64, h - 20, self.rem.Hovered and Color(240, 96, 96) or Color(200, 64, 64))
-		draw.SimpleText('Del.', 'iphone_search', self.open - 180, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
+		draw.SimpleText('Supr.', 'iphone_search', self.open - 180, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
 		
 		return true
 	end

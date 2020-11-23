@@ -61,14 +61,33 @@ App.init = function(window)
 	local scroll = iPhone.apps['contacts'].spawnScroll(window)
 	scroll.pnlCanvas:DockPadding(0, 0, 0, 32)
 
-	local ava = vgui.Create("AvatarImage", window)
-	ava:SetSize(64, 64)
-	ava:SetPos(window:GetWide()/2 - 32, 20)
+	local ava
+	
 	if not isstring(iPhone.playerMessaging) then
+		ava = vgui.Create('AvatarImage', window)
 		ava:SetPlayer(iPhone.playerMessaging, 64)
+		ava.circleColor = Color(245, 245, 245)
+		iPhone.circularInit(ava)
+	elseif iPhone.playerMessaging == 'Sergay' then
+		local sergay
+		ImgLoader.LoadMaterial('materials/elysion/iphone/sergay.png', function(mat)
+			sergay = mat
+		end)
+
+		ava = vgui.Create('Panel', window)
+		ava.Paint = function(self, w, h)
+			if sergay then
+				surface.SetDrawColor(255, 255, 255)
+				surface.SetMaterial(sergay)
+				surface.DrawTexturedRect(0, 0, w, h)
+			end
+		end
 	end
-	ava.circleColor = Color(245, 245, 245)
-	iPhone.circularInit(ava)
+
+	if ava then
+		ava:SetSize(64, 64)
+		ava:SetPos(window:GetWide()/2 - 32, 20)
+	end
 
 	-- nickname
 
@@ -117,7 +136,7 @@ App.init = function(window)
 
 		local text 
 		if offline then
-			text = 'OFFLINE'
+			text = 'HORS LIGNE'
 		else
 			text = IsValid(self.textEntry) and self.textEntry:GetValue() or 'Message'
 		end

@@ -21,6 +21,8 @@ end
 local cursor_x, cursor_y = 0, 0
 local last_hovered_panel
 local function cursorUpdate(panel)
+	if not IsValid(iPhone.panel2d) then return end
+
 	local x, y = panel:LocalToScreen(0, 0)
 	local w, h = panel:GetSize()
 	local hovered = cursor_x > x and cursor_y > y and cursor_x < x + w and cursor_y < y + h
@@ -154,3 +156,17 @@ function SWEP:PrimaryAttack()
 end
 
 SWEP.SecondaryAttack = SWEP.PrimaryAttack
+
+function SWEP:Reload()
+	if self.reloaded and self.reloaded > SysTime() then return end
+
+	self.reloaded = SysTime() + 1
+	if IsValid(iPhone.panel2d) then
+		iPhone.panel2d:Remove()
+		gui.EnableScreenClicker(false)
+	end
+
+	if IsValid(iPhone.panel) then
+		iPhone.panel:Remove()
+	end
+end

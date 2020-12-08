@@ -1,7 +1,7 @@
 App.name = 'Settings'
 App.icon = 'settings_icon'
-App.pos_x = 16 -- 100
-App.pos_y = 50
+App.pos_x = 262
+App.pos_y = 80
 
 local createSlider = function(parent, x, y, callback)
 	local slider = vgui.Create('DButton', parent)

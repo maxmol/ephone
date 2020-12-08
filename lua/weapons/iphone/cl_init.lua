@@ -20,11 +20,14 @@ end
 
 local cursor_x, cursor_y = 0, 0
 local last_hovered_panel
-local function cursorUpdate(panel)
+local function cursorUpdate(panel, custom_w, custom_h)
 	if not IsValid(iPhone.panel2d) then return end
 
 	local x, y = panel:LocalToScreen(0, 0)
 	local w, h = panel:GetSize()
+	w = custom_w or w
+	h = custom_h or h
+	
 	local hovered = cursor_x > x and cursor_y > y and cursor_x < x + w and cursor_y < y + h
 	if hovered then
 		last_hovered_panel = panel

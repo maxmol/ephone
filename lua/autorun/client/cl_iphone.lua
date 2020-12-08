@@ -249,6 +249,8 @@ iPhone = {--iPhone or {
 				local b = vgui.Create('DButton', f)
 				b:SetSize(widget.w, widget.h)
 				b:SetPos(widget.pos_x, widget.pos_y)
+				b.sizeAnim = 0
+				b.widget = widget
 	
 				local bgMat
 				ImgLoader.LoadMaterial('materials/elysion/iphone/' .. widget.bg .. '.png', function(mat)
@@ -264,14 +266,32 @@ iPhone = {--iPhone or {
 						iPhone.cursorUpdate(self)
 					end
 
+					self.sizeAnim = Lerp(FrameTime() * 10, self.sizeAnim, self.Depressed and -8 or (self.Hovered and 4 or 0))
+
+					local anim = self.sizeAnim
 					if bgMat then
-						surface.SetDrawColor(255, 255, 255, 255 - f.openAnimFraction * 255)
+						local mul = anim < 0 and 1 or 3
+						draw.RoundedBox(12, -anim*mul, -anim*(mul*0.7), w + math.min(0, anim*2) - 2, h + math.min(0, anim*2) - 2, Color(0, 0, 0, 64))
+						
 						surface.SetMaterial(bgMat)
-						surface.DrawTexturedRect(0, 0, w, h)
+						surface.SetDrawColor(255, 255, 255, 255 - f.openAnimFraction * 255)
+						surface.DrawTexturedRect(-anim, -anim, w + anim*2, h + anim*2)
 					end
+
+					if self.widget.paint then
+						self.widget.paint(self, w, h, anim)
+					end
+
+					draw.SimpleText(self.widget.name, 'iphone_appname', w/2, h + anim, color_white, TEXT_ALIGN_CENTER)
 
 					return true
 				end
+
+				function b:DoClick()
+					widget.open()
+				end
+
+				if widget.create then widget.create(b) end
 			end
 			
 			for i, app in pairs(iPhone.apps) do
@@ -408,14 +428,89 @@ iPhone.apps = {
 	},*/
 }
 
+surface.CreateFont('iphone_loup_light', {
+	font = 'Calibri Light',
+	size = 23,
+	weight = 300,
+})
+
+surface.CreateFont('iphone_loup_bold', {
+	font = 'Calibri Bold',
+	size = 23,
+	weight = 1200,
+})
+
+surface.CreateFont('iphone_loup', {
+	font = 'Montserrat ExtraBold',
+	size = 24,
+})
+
 iPhone.widgets = {
-	/*{
+	{
 		bg = 'widget test',
+		name = 'Boutique',
 		pos_x = 23,
-		pos_y = 180,
+		pos_y = 80,
 		w = 139,
 		h = 149,
-	}*/
+		open = function()
+			gui.OpenURL('https://boutique.elysionrp.fr/')
+		end
+	},
+	{
+		bg = 'widget test2',
+		name = 'Loup garou',
+		pos_x = 23,
+		pos_y = 415,
+		w = 298,
+		h = 149,
+		open = function()
+			gui.EnableScreenClicker(false)
+			iPhone.panel2d:Remove()
+
+			RunConsoleCommand('say', '!lg_join42069')
+		end,
+		paint = function(self, w, h, anim)
+			if not self.lastUpdate or self.lastUpdate < SysTime() then
+				self.lastUpdate = SysTime() + 10
+				WF.send('get_players', {})
+			end
+
+			local text
+
+			local startsIn = WF.timer_time and math.ceil(WF.timer_time - CurTime())
+			if startsIn and startsIn < 0 then
+				startsIn = math.floor(CurTime() - WF.timer_time)
+				text = 'Game in progress : '
+			end
+			
+			local time = ''
+			
+			if startsIn then
+				local mins = math.floor(startsIn / 60)
+				startsIn = startsIn - mins * 60
+				time = (mins > 0 and mins .. 'm' or '') .. startsIn .. 's'
+				if not text then text = 'Game starts in : ' end
+			end
+
+			local tw = draw.SimpleText(text or 'Waiting for players', 'iphone_loup_light', 54 - anim/2, 18 - anim/2, Color(240, 240, 240))
+			draw.SimpleText(time, 'iphone_loup_bold', (54 + tw) - anim/2, 18 - anim/2, Color(240, 240, 240))
+
+			local playerCount = WF.players and table.Count(WF.players) or 0
+			local wolfs, villagers = 0, 0
+
+			local factionsCount = WF.factionsCount[playerCount]
+			if factionsCount then
+				wolfs = factionsCount[1]
+				villagers = factionsCount[2]
+			end
+			
+			draw.SimpleText(wolfs, 'iphone_loup', 48 - anim/2, 108 + anim/2, Color(240, 240, 240))
+			draw.SimpleText(villagers, 'iphone_loup', 116, 108 + anim/2, Color(240, 240, 240))
+			
+			draw.SimpleText('Join ' .. playerCount .. '/18', 'iphone_loup', 220 + anim/2, 108 + anim/2, Color(240, 240, 240), TEXT_ALIGN_CENTER)
+		end
+	}
 }
 
 if file.Exists('iphone_messages.txt', 'DATA') then

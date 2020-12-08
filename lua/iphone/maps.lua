@@ -1,8 +1,8 @@
---App.name = 'Maps'
+App.name = 'Maps'
 App.noTitle = true
---App.icon = 'map_appli_icon'
---App.pos_x = 16
---App.pos_y = 50
+App.icon = 'map_appli_icon'
+App.pos_x = 250
+App.pos_y = 628
 App.bgColor = Color(96, 96, 96)
 App.homeBarColor = Color(200, 200, 200)
 

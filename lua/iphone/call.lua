@@ -84,7 +84,11 @@ App.init = function(window)
 
 		local ply = iPhone.playerCalling
 		if IsValid(ply) then
-			draw.SimpleText(ply:GetName(), 'iphone_title', w/2, 100, Color(250, 250, 250), TEXT_ALIGN_CENTER)
+			local text = ply:GetName()
+			if utf8.len(text) > 20 then
+				text = utf8.sub(text, 1, 20) .. '...'
+			end
+			draw.SimpleText(text, 'iphone_title', w/2, 100, Color(250, 250, 250), TEXT_ALIGN_CENTER)
 			draw.SimpleText('Calling...', 'iphone_call', w/2, 150, Color(163, 166, 176), TEXT_ALIGN_CENTER)
 		else
 			iPhone.appClose(self)

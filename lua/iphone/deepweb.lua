@@ -45,8 +45,8 @@ App.shadowedText = shadowedText
 
 App.name = 'DeepWeb'
 App.icon = 'deepweb_icon'
-App.pos_x = 250
-App.pos_y = 628
+App.pos_x = 178
+App.pos_y = 80
 App.bgColor = color_black
 
 App.init = function(window)

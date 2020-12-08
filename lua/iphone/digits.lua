@@ -120,7 +120,9 @@ App.init = function(window)
 				return true
 			end
 			function btn:DoClick()
-				l.text = l.text .. self.digit
+				if #l.text <= 16 then
+					l.text = l.text .. self.digit
+				end
 			end
 		end
 	end

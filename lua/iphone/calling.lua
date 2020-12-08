@@ -75,6 +75,10 @@ App.init = function(window)
 			calling = calling:GetName()
 		end
 
+		if utf8.len(calling) > 20 then
+			calling = utf8.sub(calling, 1, 20) .. '...'
+		end
+		
 		draw.SimpleText(calling, 'iphone_title', w/2, 100, Color(250, 250, 250), TEXT_ALIGN_CENTER)
 		draw.SimpleText(iPhone.callAnswered and formatSeconds(SysTime() - iPhone.callAnswered) or 'Calling...', 'iphone_call', w/2, 150, Color(163, 166, 176), TEXT_ALIGN_CENTER)
 	end

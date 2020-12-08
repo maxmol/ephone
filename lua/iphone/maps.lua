@@ -7,9 +7,11 @@ App.bgColor = Color(96, 96, 96)
 App.homeBarColor = Color(200, 200, 200)
 
 local overview = {
-	scale = 10,
-	pos_x = -1000,
-	pos_y = -1000,
+	scale = 29.2,
+	h = 1108,
+	w = 1149,
+	pos_x = -16304,
+	pos_y = 16654,
 }
 
 App.init = function(window)
@@ -66,16 +68,16 @@ App.init = function(window)
 				end
 			end
 
-			local realMapX = (x - overview.pos_x)/overview.scale + addX
-			local realMapY = (overview.pos_y - y)/overview.scale + addY
+			local realMapX = (overview.pos_x - x)/overview.scale + addX
+			local realMapY = (y - overview.pos_y)/overview.scale + addY
 			self.mapx = Lerp(FrameTime() * 6, self.mapx, realMapX)
 			self.mapy = Lerp(FrameTime() * 6, self.mapy, realMapY)
 
-			surface.DrawTexturedRect(self.mapx, self.mapy, h * 4, h * 4)
+			surface.DrawTexturedRect(self.mapx + w/2, self.mapy + h/2, overview.w, overview.h)
 			
 			local plyX, plyY = w/2 + self.mapx - realMapX + addX, h/2 + self.mapy - realMapY + addY
 			surface.DrawCircle(plyX, plyY, 4, 100, 150, 255)
-			local a = math.rad(LocalPlayer():EyeAngles().y - 90)
+			local a = math.rad(LocalPlayer():EyeAngles().y + 90)
 			surface.DrawLine(plyX, plyY, plyX + math.sin(a) * 20, plyY + math.cos(a) * 20)
 	end
 

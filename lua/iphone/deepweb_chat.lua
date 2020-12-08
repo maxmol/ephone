@@ -1,12 +1,15 @@
 local config = {
 	metier = {
-		'Kill',
-		'Hack',
-		'Rob'
+		'Policier',
+		'Civil',
+		'RAID',
+		'Vendeur',
+		'Gang'
 	}
 }
 
 App.bgColor = color_black
+App.deepweb_chat = true
 
 surface.CreateFont('iphone_deepweb_status', {
 	font = 'Fira Code',
@@ -88,7 +91,9 @@ local addMessage = function(scroll, text, my)
 					end
 					
 					if target then
-						scroll.sendMessage('//Contrat accepter')
+						local pos = target:GetPos()
+						scroll.sendMessage(string.format('//Contrat accepter\ntarget : %s\njob : %s\nlocation : %s %s', 
+							target:GetName(), team.GetName(target:Team()), math.floor(pos.x), math.floor(pos.y)))
 						iPhone.hitman_locked = false
 						iPhone.hitman_target = target
 					end
@@ -164,6 +169,7 @@ App.init = function(window)
 	scroll:SetPos(0, 95)
 	scroll:SetSize(window:GetWide(), window:GetTall() - 180)
 
+	local messages = iPhone.deepweb_messages[isstring(iPhone.playerDeepMessaging) and iPhone.playerDeepMessaging or iPhone.getNumber(iPhone.playerDeepMessaging)]
 	local function sendMessage(msgtext)
 		if isstring(iPhone.playerDeepMessaging) or not IsValid(iPhone.playerDeepMessaging) then
 			return 
@@ -273,6 +279,7 @@ App.init = function(window)
 
 					function option:DoClick()
 						selectPlayer.text = ply:GetName()
+						selectPlayer.ply = ply
 						selectPlayer:DoClick()
 					end
 
@@ -456,13 +463,17 @@ App.init = function(window)
 			surface.SetDrawColor(255, 255, 255)
 			surface.DrawTexturedRect(0, -28, w, h+28)
 
-			shadowedText(isstring(iPhone.playerDeepMessaging) and iPhone.playerDeepMessaging or iPhone.playerDeepMessaging:GetName(), 'iphone_deepweb_name', w/2, 66, TEXT_ALIGN_CENTER)
+			local s = ''
+			if isstring(iPhone.playerDeepMessaging) then
+				s = iPhone.playerDeepMessaging
+			elseif IsValid(iPhone.playerDeepMessaging) then
+				s = iPhone.playerDeepMessaging:GetName()
+			end
+			shadowedText(s, 'iphone_deepweb_name', w/2, 66, TEXT_ALIGN_CENTER)
 		end
 	end
 
 	-- nickname
-
-	local messages = iPhone.deepweb_messages[isstring(iPhone.playerDeepMessaging) and iPhone.playerDeepMessaging or iPhone.getNumber(iPhone.playerDeepMessaging)]
 	
 	if messages then
 		for _, msg in ipairs(messages) do
@@ -549,3 +560,9 @@ App.init = function(window)
 		self.textEntry = entry
 	end
 end
+
+net.Receive('iPhone_contract_remove', function()
+	iPhone.hitman_locked = false
+	iPhone.hitman_target = false
+	chat.AddText(Color(64, 200, 0), 'Contract completed!')
+end)

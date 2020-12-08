@@ -1,12 +1,12 @@
 local config = {
 	{
 		name = 'Tueur à gages',
-		team = '*VIP* Mercenaire',
+		team = '*VIP* Tueur à gages',
 		desc = [[Prenez contact avec les meilleurs tueurs à gages.]],
 	},
 	{
 		name = 'Hackeurs',
-		team = '*VIP* Mercenaire',
+		team = '*VIP* Hackeurs',
 		desc = [[Besoin de s'introduire dans un serveur ? Vous êtes au bon endroit.]],
 	},
 	{

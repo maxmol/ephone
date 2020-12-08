@@ -13,8 +13,20 @@ iPhone = iPhone or {
 		['666'] = function(ply)
 			DDrugs.CallHero(0, ply)
 		end,
-	}
+	},
+	contracts = {},
+	contracts_pending = {},
+	hitmen_teams = {
+		['*VIP* Mercenaire'] = true,
+	},
 }
+
+local function delmsg(from, to)
+	net.Start('iPhone')
+		net.WriteString('deepmsgdel')
+		net.WriteEntity(to)
+	net.Send(from)
+end
 
 local canHear = {}
 
@@ -26,7 +38,6 @@ net.Receive('iPhone', function(len, from)
 
 		if IsValid(to) and to:IsPlayer() then
 			local msg = utf8.sub(net.ReadString(), 0, 128)
-
 			net.Start('iPhone')
 				net.WriteString('msg')
 				net.WriteEntity(from)
@@ -37,7 +48,66 @@ net.Receive('iPhone', function(len, from)
 		local to = net.ReadEntity()
 
 		if IsValid(to) and to:IsPlayer() then
-			local msg = utf8.sub(net.ReadString(), 0, 128)
+			local msg = utf8.sub(net.ReadString(), 0, 256)
+
+			local split = string.Split(msg, '~!~')
+
+			if #split == 6 then
+				local target
+				for _, p in ipairs(player.GetAll()) do
+					if p:GetName() == split[1] then
+						target = p
+						break
+					end
+				end
+
+				if not IsValid(target) then
+					DarkRP.notify(from, 1, 4, 'Player ' .. split[1] .. ' not found')
+					delmsg(from, to)
+					return
+				end 
+				
+				local money = tonumber(split[6])
+				if not money or money <= 0 or not from:canAfford(money) then
+					DarkRP.notify(from, 1, 4, 'Invalid amount (' .. split[6] .. ')')
+					delmsg(from, to)
+					return
+				end
+
+				if not iPhone.hitmen_teams[team.GetName(to:Team())] then
+					DarkRP.notify(from, 1, 4, "You can no longer create this contract") -- the player you are writing to doesn't have the hitman job anymore
+					delmsg(from, to)
+					return
+				end
+
+				if iPhone.contracts[to] then
+					DarkRP.notify(from, 1, 4, "This hitman is busy")
+					delmsg(from, to)
+					return
+				end
+
+				-- check cooldown
+
+				iPhone.contracts_pending[to] = iPhone.contracts_pending[to] or {}
+				iPhone.contracts_pending[to][from] = {target, money}
+			elseif msg:StartWith('//Contrat accepter') then
+				local contracts = iPhone.contracts_pending[from]
+				if contracts and contracts[to] then
+					if not IsValid(contracts[to][1]) then
+						DarkRP.notify(from, 1, 4, "The target cannot be found")
+						delmsg(from, to)
+						return
+					end
+
+					iPhone.contracts[from] = contracts[to]
+					to:addMoney(-contracts[to][2])
+					iPhone.contracts_pending[from][to] = nil
+				else
+					DarkRP.notify(from, 1, 4, "There is no pending contract from this person")
+					delmsg(from, to)
+					return
+				end
+			end
 
 			net.Start('iPhone')
 				net.WriteString('deepmsg')
@@ -129,5 +199,18 @@ end)
 hook.Add('PlayerCanHearPlayersVoice', 'iPhone', function(listener, talker)
 	if canHear[listener] == talker then
 		return true
+	end
+end)
+
+
+util.AddNetworkString('iPhone_contract_remove')
+hook.Add('PlayerDeath', 'iPhone_hitman', function(ply, wep, att)
+	if iPhone.hitmen_teams[team.GetName(att:Team())] and
+		iPhone.contracts[att] and iPhone.contracts[att][1] == ply then
+		
+		att:addMoney(iPhone.contracts[att][2]) -- + bonus
+		iPhone.contracts[att] = nil
+		net.Start('iPhone_contract_remove')
+		net.Send(att)
 	end
 end)

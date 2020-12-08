@@ -576,6 +576,18 @@ net.Receive('iPhone', function()
 		if not iPhone.silenced then
 			surface.PlaySound('iphone/msg.mp3')
 		end
+	elseif id == 'deepmsgdel' then
+		local to = net.ReadEntity()
+		local id = iPhone.getNumber(to)
+		if iPhone.deepweb_messages[id] then
+			table.remove(iPhone.deepweb_messages[id])
+			iPhone.saveMessages()
+
+			local window = iPhone.appsOpened[#iPhone.appsOpened]
+			if window.app.deepweb_chat then
+				iPhone.appSwitch(window, iPhone.apps['deepweb_chat'])
+			end
+		end
 	elseif id == 'call' then
 		iPhone.appClose()
 		local from = net.ReadEntity()

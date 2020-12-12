@@ -4,7 +4,7 @@ end
 
 util.AddNetworkString('iPhone')
 
-iPhone = iPhone or {
+iPhone = {
 	calls = {},
 	codes = {
 		['222'] = function(ply)
@@ -17,7 +17,7 @@ iPhone = iPhone or {
 	contracts = {},
 	contracts_pending = {},
 	hitmen_teams = {
-		['*VIP* Mercenaire'] = true,
+		['*VIP* Tueur à gages'] = true,
 	},
 }
 

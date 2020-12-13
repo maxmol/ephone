@@ -202,13 +202,21 @@ hook.Add('PlayerCanHearPlayersVoice', 'iPhone', function(listener, talker)
 	end
 end)
 
+local bonusGiven = {}
 
 util.AddNetworkString('iPhone_contract_remove')
 hook.Add('PlayerDeath', 'iPhone_hitman', function(ply, wep, att)
 	if iPhone.hitmen_teams[team.GetName(att:Team())] and
 		iPhone.contracts[att] and iPhone.contracts[att][1] == ply then
 		
-		att:addMoney(iPhone.contracts[att][2]) -- + bonus
+		att:addMoney(iPhone.contracts[att][2])
+		if att.hitmanClass then
+			bonusGiven[att:SteamID()] = bonusGiven[att:SteamID()] or {}
+			if not bonusGiven[att:SteamID()][ply:SteamID()] then
+				bonusGiven[att:SteamID()][ply:SteamID()] = true
+				att:addMoney(att.hitmanClass.money)
+			end
+		end
 		iPhone.contracts[att] = nil
 		net.Start('iPhone_contract_remove')
 		net.Send(att)

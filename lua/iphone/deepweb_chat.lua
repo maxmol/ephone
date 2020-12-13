@@ -16,7 +16,7 @@ surface.CreateFont('iphone_deepweb_status', {
 	size = 28,
 })
 
-local addMessage = function(scroll, text, my)
+local addMessage = function(scroll, text, my, messages, key)
 	if IsValid(scroll) then
 		local split = string.Split(text, '~!~')
 
@@ -63,6 +63,8 @@ local addMessage = function(scroll, text, my)
 				ImgLoader.LoadMaterial('materials/elysion/iphone/accept_reject.png', function(mat)
 					confirmMat = mat
 				end)
+
+				local reject
 				local confirm = vgui.Create('DButton', scroll)
 				confirm:SetSize(351, 51)
 				confirm:Dock(TOP)
@@ -96,10 +98,16 @@ local addMessage = function(scroll, text, my)
 							target:GetName(), team.GetName(target:Team()), math.floor(pos.x), math.floor(pos.y)))
 						iPhone.hitman_locked = false
 						iPhone.hitman_target = target
+
+						reject:Remove()
+						confirm:Remove()
+						table.remove(messages, key)
+					else
+						notification.AddLegacy("Player can't be found", NOTIFY_ERROR, 2)
 					end
 				end
 
-				local reject = vgui.Create('DButton', scroll)
+				reject = vgui.Create('DButton', scroll)
 				reject:SetSize(402, 51)
 				reject:Dock(TOP)
 				function reject:Paint(w, h)
@@ -115,6 +123,10 @@ local addMessage = function(scroll, text, my)
 					scroll.sendMessage('//Contrat refuser')
 					iPhone.hitman_locked = false
 					iPhone.hitman_target = false
+
+					reject:Remove()
+					confirm:Remove()
+					table.remove(messages, key)
 				end
 			end
 		else
@@ -196,251 +208,254 @@ App.init = function(window)
 
 	scroll.sendMessage = sendMessage
 
-	local contractIcon
-	ImgLoader.LoadMaterial('materials/elysion/iphone/contrat_icon.png', function(mat)
-		contractIcon = mat
-	end)
-	local contract = vgui.Create('DButton', window)
-	contract:SetPos(280, 8)
-	contract:SetSize(49, 72)
-	function contract:Paint(w, h)
-		iPhone.cursorUpdate(self)
-		if contractIcon then
-			if self.Hovered then
-				surface.SetDrawColor(200, 200, 200)
-			else
-				surface.SetDrawColor(255, 255, 255)
-			end
-
-			surface.SetMaterial(contractIcon)
-			surface.DrawTexturedRect(0, 0, w, h)
-		end
-
-		return true
-	end
-	function contract:DoClick()
-		local contractbg
-		ImgLoader.LoadMaterial('materials/elysion/iphone/formulaire.png', function(mat)
-			contractbg = mat
+	if IsValid(iPhone.playerDeepMessaging) and iPhone.playerDeepMessaging:Team() == TEAM_HIT then
+		local contractIcon
+		ImgLoader.LoadMaterial('materials/elysion/iphone/contrat_icon.png', function(mat)
+			contractIcon = mat
 		end)
-
-		local c = vgui.Create('Panel', scroll)
-		c:SetSize(351, 611)
-		c:Dock(TOP)
-
-		function c:Paint(w, h)
-			if contractbg then
-				surface.SetDrawColor(255, 255, 255)
-				surface.SetMaterial(contractbg)
-				surface.DrawTexturedRect(0, 0, w, h)
-			end
-		end
-
-		local selectPlayer = vgui.Create('DButton', c)
-		selectPlayer:SetPos(28, 42)
-		selectPlayer:SetSize(300, 34)
-		selectPlayer.text = 'IDENTITÉ'
-		function selectPlayer:Paint(w, h)
+		local contract = vgui.Create('DButton', window)
+		contract:SetPos(280, 8)
+		contract:SetSize(49, 72)
+		function contract:Paint(w, h)
 			iPhone.cursorUpdate(self)
-			if self.Hovered then
-				surface.SetDrawColor(255, 255, 255, 20)
-				surface.DrawRect(0, 0, w, h)
-			end
-
-			draw.SimpleText(self.text, 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-
-			return true
-		end
-
-		function selectPlayer:DoClick()
-			if not self.options then
-				self.options = {}
-				for i, ply in ipairs(player.GetAll()) do
-					local option = vgui.Create('DButton', scroll)
-					local _, yPos = c:GetPos()
-					option:SetPos(28, yPos + 46 + 28 * i)
-					option:SetSize(298, 28)
-
-					function option:Paint(w, h)
-						iPhone.cursorUpdate(self)
-						if self.Hovered then
-							surface.SetDrawColor(60, 60, 60)
-						else
-							surface.SetDrawColor(0, 0, 0)
-						end
-						surface.DrawRect(0, 0, w, h)
-
-						surface.SetDrawColor(0, 215, 40)
-						surface.DrawOutlinedRect(0, 0, w, h)
-						draw.SimpleText(ply:GetName(), 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-
-						return true
-					end
-
-					function option:DoClick()
-						selectPlayer.text = ply:GetName()
-						selectPlayer.ply = ply
-						selectPlayer:DoClick()
-					end
-
-					table.insert(self.options, option)
-				end
-			else
-				for k, v in pairs(self.options) do
-					v:Remove()
-				end
-				self.options = nil
-			end
-		end
-
-
-		local selectJob = vgui.Create('DButton', c)
-		selectJob:SetPos(28, 332)
-		selectJob:SetSize(300, 34)
-		selectJob.text = 'MÉTIER'
-		function selectJob:Paint(w, h)
-			iPhone.cursorUpdate(self)
-			if self.Hovered then
-				surface.SetDrawColor(255, 255, 255, 20)
-				surface.DrawRect(0, 0, w, h)
-			end
-
-			draw.SimpleText(self.text, 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-
-			return true
-		end
-
-		function selectJob:DoClick()
-			if not self.options then
-				self.options = {}
-				for i, job in ipairs(config.metier) do
-					local option = vgui.Create('DButton', scroll)
-					local _, yPos = c:GetPos()
-					option:SetPos(28, yPos + 336 + 28 * i)
-					option:SetSize(298, 28)
-
-					function option:Paint(w, h)
-						iPhone.cursorUpdate(self)
-						if self.Hovered then
-							surface.SetDrawColor(60, 60, 60)
-						else
-							surface.SetDrawColor(0, 0, 0)
-						end
-						surface.DrawRect(0, 0, w, h)
-
-						surface.SetDrawColor(0, 215, 40)
-						surface.DrawOutlinedRect(0, 0, w, h)
-						draw.SimpleText(job, 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-
-						return true
-					end
-
-					function option:DoClick()
-						selectJob.text = job
-						selectJob:DoClick()
-					end
-
-					table.insert(self.options, option)
-				end
-			else
-				for k, v in pairs(self.options) do
-					v:Remove()
-				end
-				self.options = nil
-			end
-		end
-
-		c.fields = {}
-		local function createField(h)
-			local field1 = vgui.Create('DButton', c)
-			field1:SetAutoStretchVertical(true)
-			field1:SetFont('iphone_deepweb_status')
-			field1:SetText('Ecrire ici ...')
-			field1:SetColor(Color(76, 147, 87))
-			field1:SetWrap(true)
-			field1:SetPos(35, h)
-			field1:SetSize(280, 80)
-			function field1:Paint(w, h)
-				iPhone.cursorUpdate(self, w, 80)
-				if self.Hovered then
-					surface.SetDrawColor(0, 0, 0, 96)
-					surface.DrawRect(-8, 0, w + 16, 80)
-				end
-			end
-
-			function field1:DoClick()
-				if not IsValid(iPhone.panel2d) then return end
-
-				local entry = vgui.Create('DTextEntry', iPhone.panel2d)
-				entry:SetSize(ScrW(), ScrH())
-				entry:MakePopup()
-				entry:SetAlpha(0)
-				entry:SetUpdateOnType(true)
-				entry.OnEnter = function()
-					-- search
-					entry:Remove()
-					self.textEntry = nil
-				end
-
-				entry.OnLoseFocus = entry.OnEnter
-				entry.OnMousePressed = entry.OnEnter
-
-				entry.OnValueChange = function(entry, str)
-					surface.SetFont('iphone_deepweb_status')
-					local tw = surface.GetTextSize(str)
-					if tw > 760 then
-						entry:SetValue(self:GetText())
-					else
-						self:SetText(str)
-					end
-				end
-
-				self.textEntry = entry
-			end
-			
-			table.insert(c.fields, field1)
-		end
-
-		createField(114)
-		createField(230)
-		createField(403)
-		createField(520)
-
-		local confirmMat
-		ImgLoader.LoadMaterial('materials/elysion/iphone/confirmer_le_contrat.png', function(mat)
-			confirmMat = mat
-		end)
-		local confirm = vgui.Create('DButton', scroll)
-		confirm:SetSize(351, 51)
-		confirm:Dock(TOP)
-		function confirm:Paint(w, h)
-			iPhone.cursorUpdate(self)
-			if confirmMat then
+			if contractIcon then
 				if self.Hovered then
 					surface.SetDrawColor(200, 200, 200)
 				else
 					surface.SetDrawColor(255, 255, 255)
 				end
 
-				surface.SetMaterial(confirmMat)
+				surface.SetMaterial(contractIcon)
 				surface.DrawTexturedRect(0, 0, w, h)
 			end
 
 			return true
 		end
-		function confirm:DoClick()
-			sendMessage(string.format('%s~!~%s~!~%s~!~%s~!~%s~!~%s', selectPlayer.text, selectJob.text, c.fields[1]:GetText(), c.fields[2]:GetText(), c.fields[3]:GetText(), c.fields[4]:GetText()))
+		function contract:DoClick()
+			local contractbg
+			ImgLoader.LoadMaterial('materials/elysion/iphone/formulaire.png', function(mat)
+				contractbg = mat
+			end)
 
-			if selectPlayer.options then
-				selectPlayer:DoClick()
+			local c = vgui.Create('Panel', scroll)
+			c:SetSize(351, 611)
+			c:Dock(TOP)
+
+			function c:Paint(w, h)
+				if contractbg then
+					surface.SetDrawColor(255, 255, 255)
+					surface.SetMaterial(contractbg)
+					surface.DrawTexturedRect(0, 0, w, h)
+				end
 			end
 
-			if selectJob.options then
-				selectJob:DoClick()
+			local selectPlayer = vgui.Create('DButton', c)
+			selectPlayer:SetPos(28, 42)
+			selectPlayer:SetSize(300, 34)
+			selectPlayer.text = 'IDENTITÉ'
+			function selectPlayer:Paint(w, h)
+				iPhone.cursorUpdate(self)
+				if self.Hovered then
+					surface.SetDrawColor(255, 255, 255, 20)
+					surface.DrawRect(0, 0, w, h)
+				end
+
+				draw.SimpleText(self.text, 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+				return true
 			end
 
-			c:Remove()
-			self:Remove()
+			function selectPlayer:DoClick()
+				if not self.options then
+					self.options = {}
+					for i, ply in ipairs(player.GetAll()) do
+						if ply == LocalPlayer() then continue end
+						local option = vgui.Create('DButton', scroll)
+						local _, yPos = c:GetPos()
+						option:SetPos(28, yPos + 46 + 28 * i)
+						option:SetSize(298, 28)
+
+						function option:Paint(w, h)
+							iPhone.cursorUpdate(self)
+							if self.Hovered then
+								surface.SetDrawColor(60, 60, 60)
+							else
+								surface.SetDrawColor(0, 0, 0)
+							end
+							surface.DrawRect(0, 0, w, h)
+
+							surface.SetDrawColor(0, 215, 40)
+							surface.DrawOutlinedRect(0, 0, w, h)
+							draw.SimpleText(ply:GetName(), 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+							return true
+						end
+
+						function option:DoClick()
+							selectPlayer.text = ply:GetName()
+							selectPlayer.ply = ply
+							selectPlayer:DoClick()
+						end
+
+						table.insert(self.options, option)
+					end
+				else
+					for k, v in pairs(self.options) do
+						v:Remove()
+					end
+					self.options = nil
+				end
+			end
+
+
+			local selectJob = vgui.Create('DButton', c)
+			selectJob:SetPos(28, 332)
+			selectJob:SetSize(300, 34)
+			selectJob.text = 'MÉTIER'
+			function selectJob:Paint(w, h)
+				iPhone.cursorUpdate(self)
+				if self.Hovered then
+					surface.SetDrawColor(255, 255, 255, 20)
+					surface.DrawRect(0, 0, w, h)
+				end
+
+				draw.SimpleText(self.text, 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+				return true
+			end
+
+			function selectJob:DoClick()
+				if not self.options then
+					self.options = {}
+					for i, job in ipairs(config.metier) do
+						local option = vgui.Create('DButton', scroll)
+						local _, yPos = c:GetPos()
+						option:SetPos(28, yPos + 336 + 28 * i)
+						option:SetSize(298, 28)
+
+						function option:Paint(w, h)
+							iPhone.cursorUpdate(self)
+							if self.Hovered then
+								surface.SetDrawColor(60, 60, 60)
+							else
+								surface.SetDrawColor(0, 0, 0)
+							end
+							surface.DrawRect(0, 0, w, h)
+
+							surface.SetDrawColor(0, 215, 40)
+							surface.DrawOutlinedRect(0, 0, w, h)
+							draw.SimpleText(job, 'iphone_deepweb_status', 8, h/2, Color(76, 147, 87), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+
+							return true
+						end
+
+						function option:DoClick()
+							selectJob.text = job
+							selectJob:DoClick()
+						end
+
+						table.insert(self.options, option)
+					end
+				else
+					for k, v in pairs(self.options) do
+						v:Remove()
+					end
+					self.options = nil
+				end
+			end
+
+			c.fields = {}
+			local function createField(h)
+				local field1 = vgui.Create('DButton', c)
+				field1:SetAutoStretchVertical(true)
+				field1:SetFont('iphone_deepweb_status')
+				field1:SetText('Ecrire ici ...')
+				field1:SetColor(Color(76, 147, 87))
+				field1:SetWrap(true)
+				field1:SetPos(35, h)
+				field1:SetSize(280, 80)
+				function field1:Paint(w, h)
+					iPhone.cursorUpdate(self, w, 80)
+					if self.Hovered then
+						surface.SetDrawColor(0, 0, 0, 96)
+						surface.DrawRect(-8, 0, w + 16, 80)
+					end
+				end
+
+				function field1:DoClick()
+					if not IsValid(iPhone.panel2d) then return end
+
+					local entry = vgui.Create('DTextEntry', iPhone.panel2d)
+					entry:SetSize(ScrW(), ScrH())
+					entry:MakePopup()
+					entry:SetAlpha(0)
+					entry:SetUpdateOnType(true)
+					entry.OnEnter = function()
+						-- search
+						entry:Remove()
+						self.textEntry = nil
+					end
+
+					entry.OnLoseFocus = entry.OnEnter
+					entry.OnMousePressed = entry.OnEnter
+
+					entry.OnValueChange = function(entry, str)
+						surface.SetFont('iphone_deepweb_status')
+						local tw = surface.GetTextSize(str)
+						if tw > 760 then
+							entry:SetValue(self:GetText())
+						else
+							self:SetText(str)
+						end
+					end
+
+					self.textEntry = entry
+				end
+				
+				table.insert(c.fields, field1)
+			end
+
+			createField(114)
+			createField(230)
+			createField(403)
+			createField(520)
+
+			local confirmMat
+			ImgLoader.LoadMaterial('materials/elysion/iphone/confirmer_le_contrat.png', function(mat)
+				confirmMat = mat
+			end)
+			local confirm = vgui.Create('DButton', scroll)
+			confirm:SetSize(351, 51)
+			confirm:Dock(TOP)
+			function confirm:Paint(w, h)
+				iPhone.cursorUpdate(self)
+				if confirmMat then
+					if self.Hovered then
+						surface.SetDrawColor(200, 200, 200)
+					else
+						surface.SetDrawColor(255, 255, 255)
+					end
+
+					surface.SetMaterial(confirmMat)
+					surface.DrawTexturedRect(0, 0, w, h)
+				end
+
+				return true
+			end
+			function confirm:DoClick()
+				sendMessage(string.format('%s~!~%s~!~%s~!~%s~!~%s~!~%s', selectPlayer.text, selectJob.text, c.fields[1]:GetText(), c.fields[2]:GetText(), c.fields[3]:GetText(), c.fields[4]:GetText()))
+
+				if selectPlayer.options then
+					selectPlayer:DoClick()
+				end
+
+				if selectJob.options then
+					selectJob:DoClick()
+				end
+
+				c:Remove()
+				self:Remove()
+			end
 		end
 	end
 
@@ -476,8 +491,8 @@ App.init = function(window)
 	-- nickname
 	
 	if messages then
-		for _, msg in ipairs(messages) do
-			addMessage(scroll, msg.text, msg.my)
+		for key, msg in ipairs(messages) do
+			addMessage(scroll, msg.text, msg.my, messages, key)
 		end
 	end
 

@@ -48,7 +48,7 @@ net.Receive('iPhone', function(len, from)
 		local to = net.ReadEntity()
 
 		if IsValid(to) and to:IsPlayer() then
-			local msg = utf8.sub(net.ReadString(), 0, 256)
+			local msg = utf8.sub(net.ReadString(), 0, 1024)
 
 			local split = string.Split(msg, '~!~')
 
@@ -74,7 +74,8 @@ net.Receive('iPhone', function(len, from)
 					return
 				end
 
-				if not iPhone.hitmen_teams[team.GetName(to:Team())] then
+				local toTeam = to:GetNWBool('m_bDisguised', false) and to:SetNWInt('m_iPrevTeam', to:Team()) or to:Team()
+				if not iPhone.hitmen_teams[team.GetName(toTeam)] then
 					DarkRP.notify(from, 1, 4, "You can no longer create this contract") -- the player you are writing to doesn't have the hitman job anymore
 					delmsg(from, to)
 					return
@@ -206,7 +207,8 @@ local bonusGiven = {}
 
 util.AddNetworkString('iPhone_contract_remove')
 hook.Add('PlayerDeath', 'iPhone_hitman', function(ply, wep, att)
-	if iPhone.hitmen_teams[team.GetName(att:Team())] and
+	local attTeam = att:GetNWBool('m_bDisguised', false) and att:SetNWInt('m_iPrevTeam', att:Team()) or att:Team()
+	if iPhone.hitmen_teams[team.GetName(attTeam)] and
 		iPhone.contracts[att] and iPhone.contracts[att][1] == ply then
 		
 		att:addMoney(iPhone.contracts[att][2])

@@ -3,7 +3,7 @@ App.noTitle = true
 App.icon = 'map_appli_icon'
 App.pos_x = 250
 App.pos_y = 628
-App.bgColor = Color(96, 96, 96)
+App.bgColor = Color(30, 30, 31)
 App.homeBarColor = Color(200, 200, 200)
 
 local overview = {
@@ -25,7 +25,14 @@ App.init = function(window)
 	p:SetPos(0, 30)
 	p.mapx = 0
 	p.mapy = 0
+
+	local function mapPos(worldPos)
+		return p.mapx + (worldPos.x - overview.pos_x)/overview.scale + p:GetWide()/2,
+				p.mapy + (overview.pos_y - worldPos.y)/overview.scale + p:GetTall()/2
+	end
 	function p:Paint(w, h)
+		if not mapMat then return end
+		
 		iPhone.cursorUpdate(self)
 
 		render.ClearStencil()
@@ -79,6 +86,14 @@ App.init = function(window)
 			surface.DrawCircle(plyX, plyY, 4, 100, 150, 255)
 			local a = math.rad(LocalPlayer():EyeAngles().y + 90)
 			surface.DrawLine(plyX, plyY, plyX + math.sin(a) * 20, plyY + math.cos(a) * 20)
+
+			local target = iPhone.hitman_target
+			if IsValid(target) then
+				surface.SetDrawColor(255, 64, 64)
+				local target_x, target_y = mapPos(target:GetPos())
+				surface.DrawRect(target_x, target_y, 8, 8)
+				draw.SimpleText('Cible', 'iphone_appname', target_x, target_y - 22, Color(255, 64, 64))
+			end
 	end
 
 	function p:PaintOver()

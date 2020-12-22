@@ -149,7 +149,9 @@ App.init = function(window)
 		label:SetColor(Color(76, 147, 87))
 
 		for _, ply in ipairs(player.GetAll()) do
-			if team.GetName(ply:Team()) == block.team then
+			local team = ply:GetNWBool('m_bDisguised', false) and ply:SetNWInt('m_iPrevTeam', ply:Team()) or ply:Team()
+
+			if team.GetName(team) == block.team then
 				local b = vgui.Create('DButton', scroll)
 				b:SetSize(0, 48)
 				b:Dock(TOP)

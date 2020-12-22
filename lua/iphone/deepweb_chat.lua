@@ -187,7 +187,7 @@ App.init = function(window)
 			return 
 		end
 
-		local msg = {text = utf8.sub(msgtext, 0, 128), my = true}
+		local msg = {text = utf8.sub(msgtext, 0, 1024), my = true}
 		
 		if not messages then
 			messages = {}
@@ -207,8 +207,17 @@ App.init = function(window)
 	end
 
 	scroll.sendMessage = sendMessage
+	
+	local hisTeam
+	local p = iPhone.playerDeepMessaging
+	if not isstring(p) and IsValid(p) then
+		hisTeam = p:GetNWBool('m_bDisguised', false) and p:SetNWInt('m_iPrevTeam', p:Team()) or p:Team()
+	end
 
-	if IsValid(iPhone.playerDeepMessaging) and iPhone.playerDeepMessaging:Team() == TEAM_HIT then
+	p = LocalPlayer()
+	local myTeam = p:GetNWBool('m_bDisguised', false) and p:SetNWInt('m_iPrevTeam', p:Team()) or p:Team()
+
+	if hisTeam == TEAM_HIT and myTeam != TEAM_HIT then
 		local contractIcon
 		ImgLoader.LoadMaterial('materials/elysion/iphone/contrat_icon.png', function(mat)
 			contractIcon = mat
@@ -232,6 +241,8 @@ App.init = function(window)
 			return true
 		end
 		function contract:DoClick()
+			if IsValid(self.contractPanel) then return end
+			
 			local contractbg
 			ImgLoader.LoadMaterial('materials/elysion/iphone/formulaire.png', function(mat)
 				contractbg = mat
@@ -240,6 +251,7 @@ App.init = function(window)
 			local c = vgui.Create('Panel', scroll)
 			c:SetSize(351, 611)
 			c:Dock(TOP)
+			self.contractPanel = contract
 
 			function c:Paint(w, h)
 				if contractbg then
@@ -268,8 +280,10 @@ App.init = function(window)
 			function selectPlayer:DoClick()
 				if not self.options then
 					self.options = {}
-					for i, ply in ipairs(player.GetAll()) do
+					local i = 0
+					for _, ply in ipairs(player.GetAll()) do
 						if ply == LocalPlayer() then continue end
+						i = i + 1
 						local option = vgui.Create('DButton', scroll)
 						local _, yPos = c:GetPos()
 						option:SetPos(28, yPos + 46 + 28 * i)

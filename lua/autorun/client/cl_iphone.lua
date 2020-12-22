@@ -499,10 +499,12 @@ iPhone.widgets = {
 			local playerCount = WF.players and table.Count(WF.players) or 0
 			local wolfs, villagers = 0, 0
 
-			local factionsCount = WF.factionsCount[playerCount]
-			if factionsCount then
-				wolfs = factionsCount[1]
-				villagers = factionsCount[2]
+			if WF.factionsCount then
+				local factionsCount = WF.factionsCount[playerCount]
+				if factionsCount then
+					wolfs = factionsCount[1]
+					villagers = factionsCount[2]
+				end
 			end
 			
 			draw.SimpleText(wolfs, 'iphone_loup', 48 - anim/2, 108 + anim/2, Color(240, 240, 240))

@@ -207,6 +207,8 @@ local bonusGiven = {}
 
 util.AddNetworkString('iPhone_contract_remove')
 hook.Add('PlayerDeath', 'iPhone_hitman', function(ply, wep, att)
+	if not IsValid(att) then return end
+
 	local attTeam = att:GetNWBool('m_bDisguised', false) and att:SetNWInt('m_iPrevTeam', att:Team()) or att:Team()
 	if iPhone.hitmen_teams[team.GetName(attTeam)] and
 		iPhone.contracts[att] and iPhone.contracts[att][1] == ply then

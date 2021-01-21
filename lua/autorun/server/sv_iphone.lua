@@ -9,17 +9,12 @@ util.AddNetworkString('iPhone')
 iPhone = {
 	calls = {},
 	codes = {
-		['222'] = function(ply)
+		/*['222'] = function(ply)
 			DDrugs.CallCoke(0, ply)
 		end,
 		['666'] = function(ply)
 			DDrugs.CallHero(0, ply)
-		end,
-	},
-	contracts = {},
-	contracts_pending = {},
-	hitmen_teams = {
-		['*VIP* Tueur à gages'] = true,
+		end,*/
 	},
 }
 
@@ -42,78 +37,6 @@ net.Receive('iPhone', function(len, from)
 			local msg = utf8.sub(net.ReadString(), 0, 128)
 			net.Start('iPhone')
 				net.WriteString('msg')
-				net.WriteEntity(from)
-				net.WriteString(msg)
-			net.Send(to)
-		end
-	elseif id == 'deepmsg' then
-		local to = net.ReadEntity()
-
-		if IsValid(to) and to:IsPlayer() then
-			local msg = utf8.sub(net.ReadString(), 0, 1024)
-
-			local split = string.Split(msg, '~!~')
-
-			if #split == 6 then
-				local target
-				for _, p in ipairs(player.GetAll()) do
-					if p:GetName() == split[1] then
-						target = p
-						break
-					end
-				end
-
-				if not IsValid(target) then
-					DarkRP.notify(from, 1, 4, 'Player ' .. split[1] .. ' not found')
-					delmsg(from, to)
-					return
-				end 
-				
-				local money = tonumber(split[6])
-				if not money or money <= 0 or not from:canAfford(money) then
-					DarkRP.notify(from, 1, 4, 'Invalid amount (' .. split[6] .. ')')
-					delmsg(from, to)
-					return
-				end
-
-				local toTeam = to:GetNWBool('m_bDisguised', false) and to:GetNWInt('m_iPrevTeam', to:Team()) or to:Team()
-				if not iPhone.hitmen_teams[team.GetName(toTeam)] then
-					DarkRP.notify(from, 1, 4, "You can no longer create this contract") -- the player you are writing to doesn't have the hitman job anymore
-					delmsg(from, to)
-					return
-				end
-
-				if iPhone.contracts[to] then
-					DarkRP.notify(from, 1, 4, "This hitman is busy")
-					delmsg(from, to)
-					return
-				end
-
-				-- check cooldown
-
-				iPhone.contracts_pending[to] = iPhone.contracts_pending[to] or {}
-				iPhone.contracts_pending[to][from] = {target, money}
-			elseif msg:StartWith('//Contrat accepter') then
-				local contracts = iPhone.contracts_pending[from]
-				if contracts and contracts[to] then
-					if not IsValid(contracts[to][1]) then
-						DarkRP.notify(from, 1, 4, "The target cannot be found")
-						delmsg(from, to)
-						return
-					end
-
-					iPhone.contracts[from] = contracts[to]
-					to:addMoney(-contracts[to][2])
-					iPhone.contracts_pending[from][to] = nil
-				else
-					DarkRP.notify(from, 1, 4, "There is no pending contract from this person")
-					delmsg(from, to)
-					return
-				end
-			end
-
-			net.Start('iPhone')
-				net.WriteString('deepmsg')
 				net.WriteEntity(from)
 				net.WriteString(msg)
 			net.Send(to)
@@ -156,7 +79,7 @@ net.Receive('iPhone', function(len, from)
 
 		iPhone.calls[to] = from
 		iPhone.calls[from] = to
-		
+
 		net.Start('iPhone')
 			net.WriteString('call')
 			net.WriteEntity(from)
@@ -192,7 +115,7 @@ net.Receive('iPhone', function(len, from)
 		if iPhone.codes[num] then
 			iPhone.codes[num](from)
 		end
-		
+
 		net.Start('iPhone')
 			net.WriteString('endcall')
 		net.Send(from)
@@ -202,29 +125,5 @@ end)
 hook.Add('PlayerCanHearPlayersVoice', 'iPhone', function(listener, talker)
 	if canHear[listener] == talker then
 		return true
-	end
-end)
-
-local bonusGiven = {}
-
-util.AddNetworkString('iPhone_contract_remove')
-hook.Add('PlayerDeath', 'iPhone_hitman', function(ply, wep, att)
-	if not IsValid(att) then return end
-	
-	local attTeam = att:GetNWBool('m_bDisguised', false) and att:GetNWInt('m_iPrevTeam', att:Team()) or att:Team()
-	if iPhone.hitmen_teams[team.GetName(attTeam)] and
-		iPhone.contracts[att] and iPhone.contracts[att][1] == ply then
-		
-		att:addMoney(iPhone.contracts[att][2])
-		if att.hitmanClass then
-			bonusGiven[att:SteamID()] = bonusGiven[att:SteamID()] or {}
-			if not bonusGiven[att:SteamID()][ply:SteamID()] then
-				bonusGiven[att:SteamID()][ply:SteamID()] = true
-				att:addMoney(att.hitmanClass.money)
-			end
-		end
-		iPhone.contracts[att] = nil
-		net.Start('iPhone_contract_remove')
-		net.Send(att)
 	end
 end)

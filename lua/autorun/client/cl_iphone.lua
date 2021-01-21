@@ -449,60 +449,7 @@ surface.CreateFont('iphone_loup', {
 	size = 24,
 })
 
-iPhone.widgets = {{
-	bg = 'widget test2',
-	name = 'Loup garou',
-	pos_x = 23,
-	pos_y = 415,
-	w = 298,
-	h = 149,
-	open = function()
-		gui.EnableScreenClicker(false)
-		iPhone.panel2d:Remove()
-
-		RunConsoleCommand('say', '!lg_join42069')
-	end,
-	paint = function(self, w, h, anim)
-		if not self.lastUpdate or self.lastUpdate < SysTime() then
-			self.lastUpdate = SysTime() + 10
-			WF.send('get_players', {})
-		end
-
-		local text
-
-		local startsIn = WF.timer_time and math.ceil(WF.timer_time - CurTime())
-		if startsIn and startsIn < 0 then
-			startsIn = math.floor(CurTime() - WF.timer_time)
-			text = 'Game in progress : '
-		end
-		
-		local time = ''
-		
-		if startsIn then
-			local mins = math.floor(startsIn / 60)
-			startsIn = startsIn - mins * 60
-			time = (mins > 0 and mins .. 'm' or '') .. startsIn .. 's'
-			if not text then text = 'Game starts in : ' end
-		end
-
-		local tw = draw.SimpleText(text or 'Waiting for players', 'iphone_loup_light', 54 - anim/2, 18 - anim/2, Color(240, 240, 240))
-		draw.SimpleText(time, 'iphone_loup_bold', (54 + tw) - anim/2, 18 - anim/2, Color(240, 240, 240))
-
-		local playerCount = WF.players and table.Count(WF.players) or 0
-		local wolfs, villagers = 0, 0
-
-		local factionsCount = WF.factionsCount[playerCount]
-		if factionsCount then
-			wolfs = factionsCount[1]
-			villagers = factionsCount[2]
-		end
-		
-		draw.SimpleText(wolfs, 'iphone_loup', 48 - anim/2, 108 + anim/2, Color(240, 240, 240))
-		draw.SimpleText(villagers, 'iphone_loup', 116, 108 + anim/2, Color(240, 240, 240))
-		
-		draw.SimpleText('Join ' .. playerCount .. '/18', 'iphone_loup', 220 + anim/2, 108 + anim/2, Color(240, 240, 240), TEXT_ALIGN_CENTER)
-	end
-}}
+iPhone.widgets = {}
 
 if iphone_config.store_widget_link and iphone_config.store_widget_link ~= '' then
 	table.insert(iPhone.widgets, {
@@ -565,36 +512,6 @@ net.Receive('iPhone', function()
 		local msg = net.ReadString()
 		
 		receiveMessage(num, msg)
-	elseif id == 'deepmsg' then
-		local from = net.ReadEntity()
-		local msg = net.ReadString()
-
-		local id = iPhone.getNumber(from)
-		iPhone.deepweb_messages[id] = iPhone.deepweb_messages[id] or {}
-		table.insert(iPhone.deepweb_messages[id], {text = msg})
-		iPhone.deepweb_messages[id].last = os.time()
-		iPhone.saveMessages()
-
-		chat.AddText(Color(139, 40, 255), '[iPhone] ', color_white, "Vous avez reçu un message du Darkchat")
-		if iPhone.playerDeepMessaging == from and iPhone.newDeepMessage then
-			iPhone.newDeepMessage(msg)
-		end
-
-		if not iPhone.silenced then
-			surface.PlaySound('iphone/msg.mp3')
-		end
-	elseif id == 'deepmsgdel' then
-		local to = net.ReadEntity()
-		local id = iPhone.getNumber(to)
-		if iPhone.deepweb_messages[id] then
-			table.remove(iPhone.deepweb_messages[id])
-			iPhone.saveMessages()
-
-			local window = iPhone.appsOpened[#iPhone.appsOpened]
-			if window.app.deepweb_chat then
-				iPhone.appSwitch(window, iPhone.apps['deepweb_chat'])
-			end
-		end
 	elseif id == 'call' then
 		iPhone.appClose()
 		local from = net.ReadEntity()

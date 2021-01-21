@@ -1,8 +1,11 @@
 local iphone_config = include('iphone/config.lua')
+local L = include('iphone/translation.lua')
 
-for _, file in pairs(file.Find('iphone/*', 'LUA')) do
-	AddCSLuaFile('iphone/' .. file)
+for _, file in pairs(file.Find('iphone/apps/*', 'LUA')) do
+	AddCSLuaFile('iphone/apps/' .. file)
 end
+
+AddCSLuaFile('iphone/config.lua')
 
 util.AddNetworkString('iPhone')
 
@@ -70,7 +73,7 @@ net.Receive('iPhone', function(len, from)
 		end
 
 		if IsValid(iPhone.calls[to]) then
-			from:ChatPrint('Cette personne est occupé') -- visual
+			from:ChatPrint(L'player_busy')
 			net.Start('iPhone')
 				net.WriteString('endcall')
 			net.Send(from)

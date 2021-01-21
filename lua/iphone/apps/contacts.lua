@@ -227,7 +227,7 @@ App.init = function(window)
 			surface.DrawRect(0, 0, w, h-4)
 		end
 
-		self.open = Lerp(FrameTime() * 5, self.open, self.opened and 220 or 0)
+		self.open = Lerp(FrameTime() * 5, self.open, self.opened and (self.rem and 220 or 160) or 0)
 		
 		draw.SimpleText(self.name or self.num, 'iphone_contact', 24 + self.open, 8, Color(16, 16, 16))
 
@@ -237,9 +237,11 @@ App.init = function(window)
 		draw.RoundedBox(8, self.open - 140, 10, 64, h - 20, self.sms.Hovered and Color(240, 170, 64) or Color(200, 140, 32))
 		draw.SimpleText('SMS', 'iphone_search', self.open - 108, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
 
-		draw.RoundedBox(8, self.open - 212, 10, 64, h - 20, self.rem.Hovered and Color(240, 96, 96) or Color(200, 64, 64))
-		draw.SimpleText('Supr.', 'iphone_search', self.open - 180, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
-		
+		if self.rem then
+			draw.RoundedBox(8, self.open - 212, 10, 64, h - 20, self.rem.Hovered and Color(240, 96, 96) or Color(200, 64, 64))
+			draw.SimpleText('Supr.', 'iphone_search', self.open - 180, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
+		end
+
 		return true
 	end
 	
@@ -267,7 +269,23 @@ App.init = function(window)
 		return code
 	end
 
-	table.sort(iPhone.contacts, function(a, b)
+	local contactsTable
+	if iphone_config.all_players_in_contacts then
+		contactsTable = {}
+
+		for _, p in ipairs(player.GetAll()) do
+			if p ~= LocalPlayer() then
+				table.insert(contactsTable, {
+					name = p:GetName(),
+					num = iPhone.getNumber(p),
+				})
+			end
+		end
+	else
+		contactsTable = iPhone.contacts
+	end
+
+	table.sort(contactsTable, function(a, b)
 		if not a.name or not b.name then
 			return false
 		end
@@ -280,7 +298,7 @@ App.init = function(window)
 	local lastOpened
 	window.contactButtons = {}
 	local letterCode
-	for i, contact in ipairs(iPhone.contacts) do
+	for i, contact in ipairs(contactsTable) do
 		local ply = iPhone.getPlayerByNumber(contact.num)
 		if ply then
 			contact.name = contact.name or ply:GetName()
@@ -302,6 +320,8 @@ App.init = function(window)
 			end
 		end
 
+		local canRemove = not iphone_config.all_players_in_contacts
+
 		local b = vgui.Create('DButton', scroll)
 		b:SetSize(0, 52)
 		b:Dock(TOP)
@@ -316,13 +336,18 @@ App.init = function(window)
 			self.opened = not self.opened
 			self.sms:SetVisible(self.opened)
 			self.call:SetVisible(self.opened)
-			self.rem:SetVisible(self.opened)
+
+			if canRemove then
+				self.rem:SetVisible(self.opened)
+			end
 
 			if lastOpened then
 				lastOpened.opened = false
 				lastOpened.sms:SetVisible(false)
 				lastOpened.call:SetVisible(false)
-				lastOpened.rem:SetVisible(false)
+				if canRemove then
+					lastOpened.rem:SetVisible(false)
+				end
 				lastOpened = nil
 			end
 
@@ -333,7 +358,7 @@ App.init = function(window)
 
 		local call = vgui.Create('DButton', b)
 		call:SetSize(72, 52)
-		call:SetPos(172, 0)
+		call:SetPos(canRemove and 172 or 92, 0)
 		call:SetVisible(false)
 		call.Paint = function(self)
 			iPhone.cursorUpdate(self)
@@ -347,7 +372,7 @@ App.init = function(window)
 
 		local sms = vgui.Create('DButton', b)
 		sms:SetSize(72, 52)
-		sms:SetPos(100, 0)
+		sms:SetPos(canRemove and 100 or 20, 0)
 		sms:SetVisible(false)
 		sms.Paint = call.Paint
 		b.sms = sms
@@ -357,17 +382,19 @@ App.init = function(window)
 			iPhone.appSwitch(window, iPhone.apps['chat'])
 		end
 
-		local rem = vgui.Create('DButton', b)
-		rem:SetSize(100, 52)
-		rem:SetPos(0, 0)
-		rem:SetVisible(false)
-		rem.Paint = call.Paint
-		b.rem = rem
+		if canRemove then
+			local rem = vgui.Create('DButton', b)
+			rem:SetSize(100, 52)
+			rem:SetPos(0, 0)
+			rem:SetVisible(false)
+			rem.Paint = call.Paint
+			b.rem = rem
 
-		function rem:DoClick()
-			table.remove(iPhone.contacts, i)
-			iPhone.saveContacts()
-			iPhone.appSwitch(window, iPhone.apps['contacts'])
+			function rem:DoClick()
+				table.remove(iPhone.contacts, i)
+				iPhone.saveContacts()
+				iPhone.appSwitch(window, iPhone.apps['contacts'])
+			end
 		end
 	end
 

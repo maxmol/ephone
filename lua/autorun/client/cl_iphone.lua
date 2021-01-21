@@ -1,4 +1,5 @@
 local iphone_config = include('iphone/config.lua')
+local L = include('iphone/translation.lua')
 
 surface.CreateFont('iphone_time', {
 	font = 'Calibri',
@@ -65,8 +66,8 @@ iPhone = {--iPhone or {
 	height = 725,
 	iconSize = 73,
 	getNumber = function(ply)
-		local stm = ply:SteamID64()
-		local num = '06' .. stm:sub(stm:len() - 7)
+		local stm = ply.SteamID64 and ply:SteamID64() or '0'
+		local num = stm:sub(stm:len() - 7)
 		local k
 		while true do
 			num, k = string.gsub(num, "^(-?%d+)(%d%d)", "%1 %2")
@@ -378,16 +379,16 @@ iPhone = {--iPhone or {
 		return newApp
 	end,
 	call = function(number)
-		if not isstring(number) or number:StartWith('06') then
+		if not isstring(number) or string.len(number) > 5 then
 			local ply
 			if isstring(number) then
-				ply = iPhone.getPlayerByNumber(number) 
+				ply = iPhone.getPlayerByNumber(number)
 			elseif IsValid(number) and number:IsPlayer() then
 				ply = number
 			end
 
 			if not ply then
-				chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, number .. ' est hors-ligne')
+				chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, L('player_is_offline', number))
 			else
 				iPhone.playerCalling = ply
 				iPhone.appSwitch(iPhone.appsOpened[#iPhone.appsOpened], iPhone.apps['calling'])
@@ -413,7 +414,7 @@ iPhone = {--iPhone or {
 		iPhone.messages[num].last = os.time()
 		iPhone.saveMessages()
 
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, "Vous avez reçu un message de " .. num)
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, L('new_message_from', num))
 		if iPhone.playerMessaging == num and iPhone.newMessage then
 			iPhone.newMessage(msg)
 		end
@@ -454,7 +455,7 @@ iPhone.widgets = {}
 if iphone_config.store_widget_link and iphone_config.store_widget_link ~= '' then
 	table.insert(iPhone.widgets, {
 		bg = 'widget test',
-		name = 'Boutique',
+		name = L'store',
 		pos_x = 23,
 		pos_y = 80,
 		w = 139,
@@ -499,7 +500,7 @@ net.Receive('iPhone', function()
 		iPhone.messages[id].last = os.time()
 		iPhone.saveMessages()
 
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, "Vous avez reçu un message de " .. from:GetName())
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, L('new_message_from', from:GetName()))
 		if iPhone.playerMessaging == from and iPhone.newMessage then
 			iPhone.newMessage(msg)
 		end
@@ -518,7 +519,7 @@ net.Receive('iPhone', function()
 		iPhone.playerCalling = from
 		local newWindow = iPhone.appCreate(iPhone.apps['call'])
 		newWindow:SetZPos(newWindow:GetZPos() + 10)
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, from:GetName() .. ' vous apelle')
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, L('player_is_calling_you', from:GetName()))
 		iPhone.call_history[iPhone.getNumber(from)] = {time = os.time(), missed = true}
 		iPhone.saveHistory()
 
@@ -543,7 +544,7 @@ net.Receive('iPhone', function()
 		end
 	elseif id == 'anscall' then
 		iPhone.callAnswered = SysTime()
-		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, iPhone.playerCalling:GetName() .. ' vous a répondu.')
+		chat.AddText(Color(64, 100, 255), '[iPhone] ', color_white, L('player_answered_your_call', iPhone.playerCalling:GetName()))
 	end
 end)
 

@@ -1,3 +1,5 @@
+local L = include('iphone/translation.lua')
+
 App.bgColor = color_white
 
 App.init = function(window)
@@ -68,7 +70,7 @@ App.init = function(window)
 	function btnAdd:Paint(w, h)
 		if #l.text > 0 then
 			iPhone.cursorUpdate(self)
-			draw.SimpleText('Ajouter ce numéro', 'iphone_search', w/2, h/2, Color(62, 134, 255, self.Hovered and 190 or 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			draw.SimpleText(L'add_number', 'iphone_search', w/2, h/2, Color(62, 134, 255, self.Hovered and 190 or 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		end
 		return true
 	end

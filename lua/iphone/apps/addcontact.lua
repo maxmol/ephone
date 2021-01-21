@@ -1,3 +1,5 @@
+local L = include('iphone/translation.lua')
+
 App.init = function(window, contact, ply)
 	local bgMat
 	ImgLoader.LoadMaterial('materials/elysion/iphone/background_last.png', function(mat)
@@ -78,7 +80,7 @@ App.init = function(window, contact, ply)
 	local name = vgui.Create('DButton', window)
 	name:SetPos(0, 266 - 28)
 	name:SetSize(350, 42)
-	name.text = contact.name or 'Nom'
+	name.text = contact.name or L'name'
 
 	function name:Paint(w, h)
 		iPhone.cursorUpdate(self)
@@ -122,7 +124,7 @@ App.init = function(window, contact, ply)
 	local number = vgui.Create('DButton', window)
 	number:SetPos(0, 311 - 28)
 	number:SetSize(350, 42)
-	number.text = contact.num or 'Numéro'
+	number.text = contact.num or L'number'
 
 	function number:Paint(w, h)
 		iPhone.cursorUpdate(self)

@@ -1,3 +1,5 @@
+local L = include('iphone/translation.lua')
+
 local addMessage = function(scroll, text, my)
 	if IsValid(scroll) then
 		local l = vgui.Create('DLabel', scroll)
@@ -68,7 +70,7 @@ App.init = function(window)
 		ava:SetPlayer(iPhone.playerMessaging, 64)
 		ava.circleColor = Color(245, 245, 245)
 		iPhone.circularInit(ava)
-	elseif iPhone.playerMessaging == 'Sergay' then
+	/*elseif iPhone.playerMessaging == 'Sergay' then
 		local sergay
 		ImgLoader.LoadMaterial('materials/elysion/iphone/sergay.png', function(mat)
 			sergay = mat
@@ -81,7 +83,7 @@ App.init = function(window)
 				surface.SetMaterial(sergay)
 				surface.DrawTexturedRect(0, 0, w, h)
 			end
-		end
+		end*/
 	end
 
 	if ava then
@@ -136,9 +138,9 @@ App.init = function(window)
 
 		local text 
 		if offline then
-			text = 'HORS LIGNE'
+			text = L'offline'
 		else
-			text = IsValid(self.textEntry) and self.textEntry:GetValue() or 'Message'
+			text = IsValid(self.textEntry) and self.textEntry:GetValue() or L'message'
 		end
 
 		surface.SetFont('iphone_search')

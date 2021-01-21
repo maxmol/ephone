@@ -1,4 +1,6 @@
-App.name = 'Recents'
+local L = include('iphone/translation.lua')
+
+App.name = L'recents'
 App.icon = 'call_appli_icon'
 App.pos_x = 25
 App.pos_y = 628
@@ -94,7 +96,7 @@ App.init = function(window)
 		end
 	end
 
-	createSwitch(window, iPhone.width/2 - 75, 80, 'Tous', 'Manqués', function(missed)
+	createSwitch(window, iPhone.width/2 - 75, 80, L'all', L'missed', function(missed)
 		for _, btn in ipairs(window.contactButtons) do
 			if missed and (not iPhone.call_history[btn.id] or not iPhone.call_history[btn.id].missed) then
 				btn:Hide()

@@ -1,4 +1,6 @@
-App.name = 'Contacts'
+local L = include('iphone/translation.lua')
+
+App.name = L'contacts'
 App.icon = 'contact_appli_icon'
 App.pos_x = 100
 App.pos_y = 628
@@ -80,7 +82,7 @@ local base = function(window, noBackground, searchPaint)
 			surface.DrawTexturedRect(0, 0, 42, 43)
 		end
 
-		draw.SimpleText(IsValid(self.textEntry) and self.textEntry:GetValue() or 'Rechercher', 'iphone_search', 38, 8, Color(175, 175, 190))
+		draw.SimpleText(IsValid(self.textEntry) and self.textEntry:GetValue() or L'search', 'iphone_search', 38, 8, Color(175, 175, 190))
 
 		return true
 	end
@@ -139,7 +141,7 @@ local createBottomButtons = function(window, current)
 
 	recents:SetPos(50, window:GetTall() - 82)
 	recents:SetSize(62, 50)
-	recents.text = 'Récents'
+	recents.text = L'recents'
 	recents.num = 1
 	function recents:Paint(w, h)
 		if not self.mat then return end
@@ -174,7 +176,7 @@ local createBottomButtons = function(window, current)
 
 	contacts:SetPos(144, window:GetTall() - 82)
 	contacts:SetSize(62, 50)
-	contacts.text = 'Contacts'
+	contacts.text = L'contacts'
 	contacts.num = 2
 	contacts.Paint = recents.Paint
 
@@ -201,7 +203,7 @@ local createBottomButtons = function(window, current)
 
 	keys:SetPos(238, window:GetTall() - 82)
 	keys:SetSize(62, 50)
-	keys.text = 'Clavier'
+	keys.text = L'dial'
 	keys.num = 3
 	keys.Paint = recents.Paint
 
@@ -232,14 +234,14 @@ App.init = function(window)
 		draw.SimpleText(self.name or self.num, 'iphone_contact', 24 + self.open, 8, Color(16, 16, 16))
 
 		draw.RoundedBox(8, self.open - 68, 10, 64, h - 20, self.call.Hovered and Color(96, 200, 96) or Color(64, 160, 64))
-		draw.SimpleText('Call', 'iphone_search', self.open - 36, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
+		draw.SimpleText(L'call', 'iphone_search', self.open - 36, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
 
 		draw.RoundedBox(8, self.open - 140, 10, 64, h - 20, self.sms.Hovered and Color(240, 170, 64) or Color(200, 140, 32))
 		draw.SimpleText('SMS', 'iphone_search', self.open - 108, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
 
 		if self.rem then
 			draw.RoundedBox(8, self.open - 212, 10, 64, h - 20, self.rem.Hovered and Color(240, 96, 96) or Color(200, 64, 64))
-			draw.SimpleText('Supr.', 'iphone_search', self.open - 180, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
+			draw.SimpleText(L'delete', 'iphone_search', self.open - 180, 12, Color(240, 240, 240), TEXT_ALIGN_CENTER)
 		end
 
 		return true

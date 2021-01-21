@@ -1,3 +1,5 @@
+local L = include('iphone/translation.lua')
+
 App.name = 'Settings'
 App.icon = 'settings_icon'
 App.pos_x = 262
@@ -60,7 +62,7 @@ App.init = function(window)
 		surface.SetDrawColor(204, 205, 207)
 		surface.DrawRect(0, h-2, w, 2)
 
-		draw.SimpleText('Mode silencieux', 'iphone_search', 0, 14, Color(32, 32, 32), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(L'no_disturb', 'iphone_search', 0, 14, Color(32, 32, 32), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
 	local switch = createSlider(window, 264, 154, function(on)

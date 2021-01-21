@@ -1,3 +1,5 @@
+local L = include('iphone/translation.lua')
+
 App.hideHomeBar = true
 App.call = true
 App.bgColor = Color(0, 0, 0, 0)
@@ -80,7 +82,7 @@ App.init = function(window)
 		end
 		
 		draw.SimpleText(calling, 'iphone_title', w/2, 100, Color(250, 250, 250), TEXT_ALIGN_CENTER)
-		draw.SimpleText(iPhone.callAnswered and formatSeconds(SysTime() - iPhone.callAnswered) or 'Calling...', 'iphone_call', w/2, 150, Color(163, 166, 176), TEXT_ALIGN_CENTER)
+		draw.SimpleText(iPhone.callAnswered and formatSeconds(SysTime() - iPhone.callAnswered) or L'calling', 'iphone_call', w/2, 150, Color(163, 166, 176), TEXT_ALIGN_CENTER)
 	end
 
 	if not isstring(iPhone.playerCalling) and IsValid(iPhone.playerCalling) then

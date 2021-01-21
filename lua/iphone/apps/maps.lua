@@ -1,4 +1,6 @@
-App.name = 'Maps'
+local L = include('iphone/translation.lua')
+
+App.name = L'maps'
 App.noTitle = true
 App.icon = 'map_appli_icon'
 App.pos_x = 250
@@ -86,14 +88,6 @@ App.init = function(window)
 			surface.DrawCircle(plyX, plyY, 4, 100, 150, 255)
 			local a = math.rad(LocalPlayer():EyeAngles().y + 90)
 			surface.DrawLine(plyX, plyY, plyX + math.sin(a) * 20, plyY + math.cos(a) * 20)
-
-			local target = iPhone.hitman_target
-			if IsValid(target) then
-				surface.SetDrawColor(255, 64, 64)
-				local target_x, target_y = mapPos(target:GetPos())
-				surface.DrawRect(target_x, target_y, 8, 8)
-				draw.SimpleText('Cible', 'iphone_appname', target_x, target_y - 22, Color(255, 64, 64))
-			end
 	end
 
 	function p:PaintOver()

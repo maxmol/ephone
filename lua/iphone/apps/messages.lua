@@ -1,4 +1,6 @@
-App.name = 'Messages'
+local L = include('iphone/translation.lua')
+
+App.name = L'messages'
 App.icon = 'sms_appli_icon'
 App.pos_x = 175
 App.pos_y = 628
@@ -76,7 +78,7 @@ App.init = function(window)
 			ava:SetPlayer(ply, 64)
 			iPhone.circularInit(ava)
 			b.ava = ava
-		elseif id == 'Sergay' then
+		/*elseif id == 'Sergay' then
 			local sergay
 			ImgLoader.LoadMaterial('materials/elysion/iphone/sergay.png', function(mat)
 				sergay = mat
@@ -89,7 +91,7 @@ App.init = function(window)
 					surface.SetMaterial(sergay)
 					surface.DrawTexturedRect(0, 0, w, h)
 				end
-			end
+			end*/
 		end
 
 		if ava then

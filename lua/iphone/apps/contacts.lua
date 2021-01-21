@@ -189,10 +189,14 @@ local createBottomButtons = function(window, current)
 	local keys = vgui.Create('DButton', window)
 
 	ImgLoader.LoadMaterial('materials/elysion/iphone/clavier_numbericon unused.png', function(mat)
-		keys.mat = mat
+		if IsValid(keys) then
+			keys.mat = mat
+		end
 	end)
 	ImgLoader.LoadMaterial('materials/elysion/iphone/clavier_numbericon used.png', function(mat)
-		keys.matActive = mat
+		if IsValid(keys) then
+			keys.matActive = mat
+		end
 	end)
 
 	keys:SetPos(238, window:GetTall() - 82)

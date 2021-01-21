@@ -207,15 +207,15 @@ App.init = function(window)
 	end
 
 	scroll.sendMessage = sendMessage
-	
+
 	local hisTeam
 	local p = iPhone.playerDeepMessaging
 	if not isstring(p) and IsValid(p) then
-		hisTeam = p:GetNWBool('m_bDisguised', false) and p:SetNWInt('m_iPrevTeam', p:Team()) or p:Team()
+		hisTeam = p:GetNWBool('m_bDisguised', false) and p:GetNWInt('m_iPrevTeam', p:Team()) or p:Team()
 	end
 
 	p = LocalPlayer()
-	local myTeam = p:GetNWBool('m_bDisguised', false) and p:SetNWInt('m_iPrevTeam', p:Team()) or p:Team()
+	local myTeam = p:GetNWBool('m_bDisguised', false) and p:GetNWInt('m_iPrevTeam', p:Team()) or p:Team()
 
 	if hisTeam == TEAM_HIT and myTeam != TEAM_HIT then
 		local contractIcon

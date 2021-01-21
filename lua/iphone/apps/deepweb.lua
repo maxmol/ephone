@@ -149,7 +149,7 @@ App.init = function(window)
 		label:SetColor(Color(76, 147, 87))
 
 		for _, ply in ipairs(player.GetAll()) do
-			local tm = ply:GetNWBool('m_bDisguised', false) and ply:SetNWInt('m_iPrevTeam', ply:Team()) or ply:Team()
+			local tm = ply:GetNWBool('m_bDisguised', false) and ply:GetNWInt('m_iPrevTeam', ply:Team()) or ply:Team()
 
 			if team.GetName(tm) == block.team then
 				local b = vgui.Create('DButton', scroll)
@@ -185,9 +185,11 @@ App.init = function(window)
 		line:SetSize(350, 2)
 		line:Dock(TOP)
 		function line:Paint(w, h)
-			surface.SetDrawColor(255, 255, 255)
-			surface.SetMaterial(lineMat)
-			surface.DrawTexturedRect(11, 0, 328, 2)
+			if lineMat then
+				surface.SetDrawColor(255, 255, 255)
+				surface.SetMaterial(lineMat)
+				surface.DrawTexturedRect(11, 0, 328, 2)
+			end
 		end
 	end
 end

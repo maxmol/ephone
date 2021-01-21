@@ -173,3 +173,9 @@ function SWEP:Reload()
 		iPhone.panel:Remove()
 	end
 end
+
+function SWEP:Think()
+	if Air.thirdPerson and self:GetOwner() == LocalPlayer() then
+		Air.setThirdPerson(false)
+	end
+end

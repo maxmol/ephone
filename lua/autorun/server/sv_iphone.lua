@@ -1,3 +1,5 @@
+local iphone_config = include('iphone/config.lua')
+
 for _, file in pairs(file.Find('iphone/*', 'LUA')) do
 	AddCSLuaFile('iphone/' .. file)
 end
@@ -74,7 +76,7 @@ net.Receive('iPhone', function(len, from)
 					return
 				end
 
-				local toTeam = to:GetNWBool('m_bDisguised', false) and to:SetNWInt('m_iPrevTeam', to:Team()) or to:Team()
+				local toTeam = to:GetNWBool('m_bDisguised', false) and to:GetNWInt('m_iPrevTeam', to:Team()) or to:Team()
 				if not iPhone.hitmen_teams[team.GetName(toTeam)] then
 					DarkRP.notify(from, 1, 4, "You can no longer create this contract") -- the player you are writing to doesn't have the hitman job anymore
 					delmsg(from, to)
@@ -208,8 +210,8 @@ local bonusGiven = {}
 util.AddNetworkString('iPhone_contract_remove')
 hook.Add('PlayerDeath', 'iPhone_hitman', function(ply, wep, att)
 	if not IsValid(att) then return end
-
-	local attTeam = att:GetNWBool('m_bDisguised', false) and att:SetNWInt('m_iPrevTeam', att:Team()) or att:Team()
+	
+	local attTeam = att:GetNWBool('m_bDisguised', false) and att:GetNWInt('m_iPrevTeam', att:Team()) or att:Team()
 	if iPhone.hitmen_teams[team.GetName(attTeam)] and
 		iPhone.contracts[att] and iPhone.contracts[att][1] == ply then
 		

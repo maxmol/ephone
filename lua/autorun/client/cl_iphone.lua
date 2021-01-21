@@ -1,3 +1,5 @@
+local iphone_config = include('iphone/config.lua')
+
 surface.CreateFont('iphone_time', {
 	font = 'Calibri',
 	size = 24,
@@ -293,30 +295,32 @@ iPhone = {--iPhone or {
 
 				if widget.create then widget.create(b) end
 			end
-			
+
 			for i, app in pairs(iPhone.apps) do
-				if not app.icon then continue end
-	
+				if not app.icon or table.HasValue(iphone_config.disabled_apps, i) then
+					continue
+				end
+
 				local b = vgui.Create('DButton', f)
 				b:SetSize(iPhone.iconSize, iPhone.iconSize)
 				b:SetPos(app.pos_x, app.pos_y)
 				b.app = app
-	
+
 				local appMat
 				ImgLoader.LoadMaterial('materials/elysion/iphone/' .. app.icon .. '.png', function(mat)
 					appMat = mat
 				end)
-				
+
 				b.openAnimFraction = 0
 				function b:Paint(w, h)
 					if f.openAnimFraction == 1 then
 						return true
 					end
-					
+
 					if #iPhone.appsOpened == 0 and f.openAnimFraction == 0 then
 						iPhone.cursorUpdate(self)
 					end
-	
+
 					if appMat then
 						if self.Hovered then
 							surface.SetDrawColor(200, 200, 200)
@@ -445,8 +449,63 @@ surface.CreateFont('iphone_loup', {
 	size = 24,
 })
 
-iPhone.widgets = {
-	{
+iPhone.widgets = {{
+	bg = 'widget test2',
+	name = 'Loup garou',
+	pos_x = 23,
+	pos_y = 415,
+	w = 298,
+	h = 149,
+	open = function()
+		gui.EnableScreenClicker(false)
+		iPhone.panel2d:Remove()
+
+		RunConsoleCommand('say', '!lg_join42069')
+	end,
+	paint = function(self, w, h, anim)
+		if not self.lastUpdate or self.lastUpdate < SysTime() then
+			self.lastUpdate = SysTime() + 10
+			WF.send('get_players', {})
+		end
+
+		local text
+
+		local startsIn = WF.timer_time and math.ceil(WF.timer_time - CurTime())
+		if startsIn and startsIn < 0 then
+			startsIn = math.floor(CurTime() - WF.timer_time)
+			text = 'Game in progress : '
+		end
+		
+		local time = ''
+		
+		if startsIn then
+			local mins = math.floor(startsIn / 60)
+			startsIn = startsIn - mins * 60
+			time = (mins > 0 and mins .. 'm' or '') .. startsIn .. 's'
+			if not text then text = 'Game starts in : ' end
+		end
+
+		local tw = draw.SimpleText(text or 'Waiting for players', 'iphone_loup_light', 54 - anim/2, 18 - anim/2, Color(240, 240, 240))
+		draw.SimpleText(time, 'iphone_loup_bold', (54 + tw) - anim/2, 18 - anim/2, Color(240, 240, 240))
+
+		local playerCount = WF.players and table.Count(WF.players) or 0
+		local wolfs, villagers = 0, 0
+
+		local factionsCount = WF.factionsCount[playerCount]
+		if factionsCount then
+			wolfs = factionsCount[1]
+			villagers = factionsCount[2]
+		end
+		
+		draw.SimpleText(wolfs, 'iphone_loup', 48 - anim/2, 108 + anim/2, Color(240, 240, 240))
+		draw.SimpleText(villagers, 'iphone_loup', 116, 108 + anim/2, Color(240, 240, 240))
+		
+		draw.SimpleText('Join ' .. playerCount .. '/18', 'iphone_loup', 220 + anim/2, 108 + anim/2, Color(240, 240, 240), TEXT_ALIGN_CENTER)
+	end
+}}
+
+if iphone_config.store_widget_link and iphone_config.store_widget_link ~= '' then
+	table.insert(iPhone.widgets, {
 		bg = 'widget test',
 		name = 'Boutique',
 		pos_x = 23,
@@ -454,66 +513,10 @@ iPhone.widgets = {
 		w = 139,
 		h = 149,
 		open = function()
-			gui.OpenURL('https://boutique.elysionrp.fr/')
+			gui.OpenURL(iphone_config.store_widget_link)
 		end
-	},
-	{
-		bg = 'widget test2',
-		name = 'Loup garou',
-		pos_x = 23,
-		pos_y = 415,
-		w = 298,
-		h = 149,
-		open = function()
-			gui.EnableScreenClicker(false)
-			iPhone.panel2d:Remove()
-
-			RunConsoleCommand('say', '!lg_join42069')
-		end,
-		paint = function(self, w, h, anim)
-			if not self.lastUpdate or self.lastUpdate < SysTime() then
-				self.lastUpdate = SysTime() + 10
-				WF.send('get_players', {})
-			end
-
-			local text
-
-			local startsIn = WF.timer_time and math.ceil(WF.timer_time - CurTime())
-			if startsIn and startsIn < 0 then
-				startsIn = math.floor(CurTime() - WF.timer_time)
-				text = 'Game in progress : '
-			end
-			
-			local time = ''
-			
-			if startsIn then
-				local mins = math.floor(startsIn / 60)
-				startsIn = startsIn - mins * 60
-				time = (mins > 0 and mins .. 'm' or '') .. startsIn .. 's'
-				if not text then text = 'Game starts in : ' end
-			end
-
-			local tw = draw.SimpleText(text or 'Waiting for players', 'iphone_loup_light', 54 - anim/2, 18 - anim/2, Color(240, 240, 240))
-			draw.SimpleText(time, 'iphone_loup_bold', (54 + tw) - anim/2, 18 - anim/2, Color(240, 240, 240))
-
-			local playerCount = WF.players and table.Count(WF.players) or 0
-			local wolfs, villagers = 0, 0
-
-			if WF.factionsCount then
-				local factionsCount = WF.factionsCount[playerCount]
-				if factionsCount then
-					wolfs = factionsCount[1]
-					villagers = factionsCount[2]
-				end
-			end
-			
-			draw.SimpleText(wolfs, 'iphone_loup', 48 - anim/2, 108 + anim/2, Color(240, 240, 240))
-			draw.SimpleText(villagers, 'iphone_loup', 116, 108 + anim/2, Color(240, 240, 240))
-			
-			draw.SimpleText('Join ' .. playerCount .. '/18', 'iphone_loup', 220 + anim/2, 108 + anim/2, Color(240, 240, 240), TEXT_ALIGN_CENTER)
-		end
-	}
-}
+	})
+end
 
 if file.Exists('iphone_messages.txt', 'DATA') then
 	iPhone.messages = util.JSONToTable(file.Read('iphone_messages.txt', 'DATA'))
@@ -528,9 +531,11 @@ if file.Exists('iphone_contacts.txt', 'DATA') then
 end
 
 local env = getfenv()
-for _, file in pairs(file.Find('iphone/*', 'LUA')) do
-	env.App = iPhone:AddApplication(string.StripExtension(file))
-	include('iphone/' .. file)
+for _, file in pairs(file.Find('iphone/apps/*', 'LUA')) do
+	local appId = string.StripExtension(file)
+
+	env.App = iPhone:AddApplication(appId)
+	include('iphone/apps/' .. file)
 end
 env.App = nil
 

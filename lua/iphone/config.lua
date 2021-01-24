@@ -14,7 +14,7 @@ iphone_config = {
 	},
 
 	-- avaliable languages: 'en', 'fr', 'ru'
-	lang = 'en',
+	lang = 'ru',
 }
 
 return iphone_config

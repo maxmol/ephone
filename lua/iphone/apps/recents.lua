@@ -10,7 +10,7 @@ local createSwitch = function(parent, x, y, offText, onText, callback)
 	local bOff, bOn
 	local p = vgui.Create('Panel', parent)
 	p:SetPos(x, y)
-	p:SetSize(150, 32)
+	p:SetSize(220, 32)
 	p.selectPos = 0
 	p.on = false
 	function p:Paint(w, h)
@@ -22,7 +22,7 @@ local createSwitch = function(parent, x, y, offText, onText, callback)
 	
 	bOff = vgui.Create('DButton', p)
 	bOff:SetPos(0, 0)
-	bOff:SetSize(75, 32)
+	bOff:SetSize(110, 32)
 	function bOff:Paint(w, h)
 		iPhone.cursorUpdate(self)
 		draw.SimpleText(offText, 'iphone_search', w/2, h/2, Color(16, 16, 16), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -34,8 +34,8 @@ local createSwitch = function(parent, x, y, offText, onText, callback)
 	end
 
 	bOn = vgui.Create('DButton', p)
-	bOn:SetPos(75, 0)
-	bOn:SetSize(75, 32)
+	bOn:SetPos(110, 0)
+	bOn:SetSize(110, 32)
 	function bOn:Paint(w, h)
 		iPhone.cursorUpdate(self)
 		draw.SimpleText(onText, 'iphone_search', w/2, h/2, Color(16, 16, 16), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -96,7 +96,7 @@ App.init = function(window)
 		end
 	end
 
-	createSwitch(window, iPhone.width/2 - 75, 80, L'all', L'missed', function(missed)
+	createSwitch(window, iPhone.width/2 - 105, 80, L'all', L'missed', function(missed)
 		for _, btn in ipairs(window.contactButtons) do
 			if missed and (not iPhone.call_history[btn.id] or not iPhone.call_history[btn.id].missed) then
 				btn:Hide()

@@ -17,7 +17,7 @@ surface.CreateFont('iphone_title', {
 	weight = 1200,
 })
 
-surface.CreateFont('iphone_call', { 
+surface.CreateFont('iphone_call', {
 	font = 'Calibri',
 	size = 28,
 	weight = 600,
@@ -25,8 +25,14 @@ surface.CreateFont('iphone_call', {
 
 surface.CreateFont('iphone_medium', {
 	font = 'Calibri',
-	size = 34, 
+	size = 34,
 	weight = 600,
+})
+
+surface.CreateFont('iphone_large', {
+	font = 'Montserrat',
+	size = 48,
+	weight = 400,
 })
 
 surface.CreateFont('iphone_contact', {
@@ -127,6 +133,7 @@ iPhone = {--iPhone or {
 			homeBar:SetSize(300, 40)
 			homeBar:SetPos(iPhone.width/2 - 150, window:GetTall() - 28)
 			homeBar.color = app.homeBarColor or Color(96, 96, 96)
+			homeBar:SetZPos(homeBar:GetZPos() + 50)
 			function homeBar:Paint(w, h)
 				iPhone.cursorUpdate(self)
 				draw.RoundedBox(8, 50, 12, w-100, 10, self.Hovered and self.color or ColorAlpha(self.color, 200))

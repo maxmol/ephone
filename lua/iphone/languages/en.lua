@@ -33,4 +33,5 @@ return {
 	bank_deposit = 'Deposit amount',
 	bank_btn2 = 'Withdraw',
 	bank_btn3 = 'Deposit',
+	not_enough_money = "You don't have enough money!",
 }

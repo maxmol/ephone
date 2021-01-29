@@ -282,7 +282,7 @@ iPhone = {--iPhone or {
 					if bgMat then
 						local mul = anim < 0 and 1 or 3
 						draw.RoundedBox(12, -anim*mul, -anim*(mul*0.7), w + math.min(0, anim*2) - 2, h + math.min(0, anim*2) - 2, Color(0, 0, 0, 64))
-						
+
 						surface.SetMaterial(bgMat)
 						surface.SetDrawColor(255, 255, 255, 255 - f.openAnimFraction * 255)
 						surface.DrawTexturedRect(-anim, -anim, w + anim*2, h + anim*2)
@@ -461,8 +461,22 @@ iPhone.widgets = {}
 
 if iphone_config.store_widget_link and iphone_config.store_widget_link ~= '' then
 	table.insert(iPhone.widgets, {
-		bg = 'widget test',
+		bg = 'widget_store',
 		name = L'store',
+		pos_x = 23,
+		pos_y = 80,
+		w = 139,
+		h = 149,
+		open = function()
+			gui.OpenURL(iphone_config.store_widget_link)
+		end
+	})
+end
+
+if iphone_config.discord_widget_link and iphone_config.discord_widget_link ~= '' then
+	table.insert(iPhone.widgets, {
+		bg = 'widget_discord',
+		name = 'Discord',
 		pos_x = 23,
 		pos_y = 80,
 		w = 139,

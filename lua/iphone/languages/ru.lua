@@ -33,4 +33,5 @@ return {
 	bank_deposit = 'Пополнить счет',
 	bank_btn2 = 'Снять',
 	bank_btn3 = 'Пополнить',
+	not_enough_money = 'У вас нет столько денег!',
 }

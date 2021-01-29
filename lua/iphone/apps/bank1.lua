@@ -83,11 +83,23 @@ end
 
 App.bank_main = bank_main
 
+local bankMoney = '0'
 App.init = function(window)
 	local panel = bank_main(window, 1)
 
+	timer.Simple(0.5, function()
+		net.Start('iphone_bank')
+		net.WriteUInt(1, 3)
+		net.SendToServer()
+	end)
+
 	function panel:Paint(w, h)
 		draw.SimpleText(L'bank_balance', 'iphone_medium', w / 2, 20, color_black, TEXT_ALIGN_CENTER)
-		draw.SimpleText(DarkRP.formatMoney(0), 'iphone_balance', w / 2, 60, Color(22, 177, 230), TEXT_ALIGN_CENTER)
+		local bankMoneyNumber = tonumber(bankMoney)
+		draw.SimpleText(bankMoneyNumber and DarkRP.formatMoney(bankMoneyNumber) or bankMoney, 'iphone_balance', w / 2, 60, Color(22, 177, 230), TEXT_ALIGN_CENTER)
 	end
 end
+
+net.Receive('iphone_bank', function()
+	bankMoney = net.ReadString()
+end)

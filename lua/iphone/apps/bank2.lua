@@ -2,7 +2,7 @@ local L = include('iphone/translation.lua')
 
 local bank_action = function(window, panel, page, action)
 	function panel:Paint(w, h)
-		draw.SimpleText(L'bank_withdraw', 'iphone_contact_bold', 16, 20, color_black)
+		draw.SimpleText(page == 2 and L'bank_withdraw' or L'bank_deposit', 'iphone_contact_bold', 16, 20, color_black)
 	end
 
 	local input = vgui.Create('DButton', panel)
@@ -52,6 +52,8 @@ local bank_action = function(window, panel, page, action)
 	end
 
 	function input:DoClick()
+		self.value = 0
+
 		local entry = vgui.Create('DTextEntry')
 		entry:SetSize(ScrW(), ScrH())
 		entry:MakePopup()
@@ -106,7 +108,11 @@ local bank_action = function(window, panel, page, action)
 
 	function b:DoClick()
 		action(tonumber(input.value) or 0)
-		iPhone.appSwitch(window, iPhone.apps['bank1'])
+		timer.Simple(0.3, function()
+			if IsValid(window) then
+				iPhone.appSwitch(window, iPhone.apps['bank1'])
+			end
+		end)
 	end
 end
 
@@ -116,11 +122,9 @@ App.init = function(window)
 	local panel = iPhone.apps['bank1'].bank_main(window, 2)
 	bank_action(window, panel, 2, function(amount)
 		if amount > 0 then
-			net.Start('blueatm')
-			net.WriteUInt(BATM_NET_COMMANDS.withdraw, 8)
-			net.WriteEntity(ents.FindByClass('atm_wall')[1])
-			net.WriteString('personal')
-			net.WriteDouble(amount)
+			net.Start('iphone_bank')
+			net.WriteUInt(2, 3)
+			net.WriteUInt(amount, 32)
 			net.SendToServer()
 		end
 	end)

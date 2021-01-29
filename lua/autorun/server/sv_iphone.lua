@@ -19,7 +19,12 @@ iPhone = {
 			DDrugs.CallHero(0, ply)
 		end,*/
 	},
+	db = include('iphone/sv/sql.lua'),
 }
+
+iPhone.db.init()
+
+include('iphone/sv/bank.lua')
 
 local function delmsg(from, to)
 	net.Start('iPhone')

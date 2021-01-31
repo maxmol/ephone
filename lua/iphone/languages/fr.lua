@@ -34,4 +34,7 @@ return {
 	bank_btn2 = 'Retirer',
 	bank_btn3 = 'Déposer',
 	not_enough_money = "Vous n'avez pas assez d'argent!",
+	open = 'VOIR',
+	buy = 'ACHETER',
+	online_players = 'Joueurs en ligne',
 }

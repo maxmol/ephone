@@ -2,7 +2,7 @@ local L = include('iphone/translation.lua')
 
 App.name = L'messages'
 App.icon = 'sms_appli_icon'
-App.pos_x = 175
+App.pos_x = 138
 App.pos_y = 628
 
 App.init = function(window)

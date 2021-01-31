@@ -34,4 +34,7 @@ return {
 	bank_btn2 = 'Снять',
 	bank_btn3 = 'Пополнить',
 	not_enough_money = 'У вас нет столько денег!',
+	open = 'Открыть',
+	buy = 'КУПИТЬ',
+	online_players = 'Игроки на сервере',
 }

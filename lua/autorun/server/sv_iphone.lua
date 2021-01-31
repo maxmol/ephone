@@ -25,6 +25,7 @@ iPhone = {
 iPhone.db.init()
 
 include('iphone/sv/bank.lua')
+include('iphone/sv/store.lua')
 
 local function delmsg(from, to)
 	net.Start('iPhone')

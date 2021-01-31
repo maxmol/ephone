@@ -2,7 +2,7 @@ local L = include('iphone/translation.lua')
 
 App.name = L'recents'
 App.icon = 'call_appli_icon'
-App.pos_x = 25
+App.pos_x = 60
 App.pos_y = 628
 App.bgColor = color_white
 

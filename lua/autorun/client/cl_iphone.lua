@@ -4,52 +4,68 @@ local L = include('iphone/translation.lua')
 surface.CreateFont('iphone_time', {
 	font = 'Calibri',
 	size = 24,
+	extended = true,
 })
 
 surface.CreateFont('iphone_appname', {
 	font = 'Calibri',
 	size = 22,
+	extended = true,
 })
 
 surface.CreateFont('iphone_title', {
 	font = 'Calibri',
 	size = 46,
 	weight = 1200,
+	extended = true,
 })
 
 surface.CreateFont('iphone_call', {
 	font = 'Calibri',
 	size = 28,
 	weight = 600,
+	extended = true,
 })
 
 surface.CreateFont('iphone_medium', {
 	font = 'Calibri',
 	size = 34,
 	weight = 600,
+	extended = true,
 })
 
 surface.CreateFont('iphone_large', {
 	font = 'Montserrat',
 	size = 48,
 	weight = 400,
+	extended = true,
 })
 
 surface.CreateFont('iphone_contact', {
 	font = 'Calibri',
 	size = 32,
+	extended = true,
 })
 
 surface.CreateFont('iphone_contact_bold', {
 	font = 'Calibri',
 	size = 32,
 	weight = 1200,
+	extended = true,
 })
 
 surface.CreateFont('iphone_search', {
 	font = 'Calibri',
 	size = 26,
 	weight = 900,
+	extended = true,
+})
+
+surface.CreateFont('iphone_small', {
+	font = 'Calibri Light',
+	size = 21,
+	weight = 600,
+	extended = true,
 })
 
 local circularInit = function(panel, dark)
@@ -57,7 +73,7 @@ local circularInit = function(panel, dark)
 	ImgLoader.LoadMaterial('materials/elysion/iphone/' .. (dark and 'player_img' or 'circle') .. '.png', function(mat)
 		circle = mat
 	end)
-	
+
 	function panel:PaintOver(w, h)
 		if circle then
 			surface.SetDrawColor(self.circleColor or color_white)
@@ -463,8 +479,8 @@ if iphone_config.store_widget_link and iphone_config.store_widget_link ~= '' the
 	table.insert(iPhone.widgets, {
 		bg = 'widget_store',
 		name = L'store',
-		pos_x = 23,
-		pos_y = 80,
+		pos_x = 24,
+		pos_y = 200,
 		w = 139,
 		h = 149,
 		open = function()
@@ -477,8 +493,8 @@ if iphone_config.discord_widget_link and iphone_config.discord_widget_link ~= ''
 	table.insert(iPhone.widgets, {
 		bg = 'widget_discord',
 		name = 'Discord',
-		pos_x = 23,
-		pos_y = 80,
+		pos_x = 187,
+		pos_y = 200,
 		w = 139,
 		h = 149,
 		open = function()

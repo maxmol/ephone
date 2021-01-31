@@ -2,13 +2,13 @@ local L = include('iphone/translation.lua')
 
 App.name = L'contacts'
 App.icon = 'contact_appli_icon'
-App.pos_x = 100
+App.pos_x = 216
 App.pos_y = 628
 
-local spawnScroll = function(window, noBackground)
+local spawnScroll = function(window, noBackground, yPos, bottomMargin)
 	local scroll = vgui.Create('DScrollPanel', window)
-	scroll:SetPos(0, 128)
-	scroll:SetSize(window:GetWide(), window:GetTall() - 210)
+	scroll:SetPos(0, yPos or 128)
+	scroll:SetSize(window:GetWide(), window:GetTall() - (yPos and yPos + (bottomMargin or 50) or 210))
 	function scroll:Paint(w, h)
 		iPhone.cursorUpdate(self)
 
@@ -271,36 +271,56 @@ App.init = function(window)
 		return code
 	end
 
-	local contactsTable
-	if iphone_config.all_players_in_contacts then
-		contactsTable = {}
-
+	local contactsTable = iPhone.contacts
+	if iphone_config.show_online_players_in_contacts then
 		for _, p in ipairs(player.GetAll()) do
 			if p ~= LocalPlayer() then
 				table.insert(contactsTable, {
 					name = p:GetName(),
 					num = iPhone.getNumber(p),
+					isPlayer = true
 				})
 			end
 		end
-	else
-		contactsTable = iPhone.contacts
 	end
+
+	PrintTable(contactsTable)
 
 	table.sort(contactsTable, function(a, b)
 		if not a.name or not b.name then
 			return false
 		end
 
+		if a.isPlayer and not b.isPlayer then
+			return false
+		elseif not a.isPlayer and b.isPlayer then
+			return true
+		end
+
 		a = getFirstLetterCode(a.name)
 		b = getFirstLetterCode(b.name)
-		return a > b 
+
+		return a > b
 	end)
 
+	local lastIsPlayer = false
 	local lastOpened
 	window.contactButtons = {}
 	local letterCode
 	for i, contact in ipairs(contactsTable) do
+		if not lastIsPlayer and contact.isPlayer then
+			local spacer = vgui.Create('Panel', scroll)
+			spacer:SetSize(0, 74)
+			spacer:Dock(TOP)
+			function spacer:Paint(w, h)
+				draw.SimpleText(L'online_players', 'iphone_contact_bold', w / 2, 32, Color(16, 16, 16), TEXT_ALIGN_CENTER)
+			end
+
+			letterCode = nil
+		end
+
+		lastIsPlayer = contact.isPlayer
+
 		local ply = iPhone.getPlayerByNumber(contact.num)
 		if ply then
 			contact.name = contact.name or ply:GetName()
@@ -322,7 +342,7 @@ App.init = function(window)
 			end
 		end
 
-		local canRemove = not iphone_config.all_players_in_contacts
+		local canRemove = not contact.isPlayer
 
 		local b = vgui.Create('DButton', scroll)
 		b:SetSize(0, 52)

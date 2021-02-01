@@ -1,11 +1,11 @@
 include('shared.lua')
 
-SWEP.PrintName = 'iPhone'
+SWEP.PrintName = 'ePhone'
 SWEP.Slot = 2
 SWEP.SlotPos = 1
 SWEP.DrawAmmo = false
 SWEP.Purpose = ''
-SWEP.Author = 'ElysionRP'
+SWEP.Author = 'ePhone Team'
 SWEP.UseHands = true
 
 SWEP.HoldType = 'pistol'

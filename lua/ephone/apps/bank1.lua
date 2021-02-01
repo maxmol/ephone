@@ -1,4 +1,4 @@
-local L = include('iphone/translation.lua')
+local L = include('ephone/translation.lua')
 
 surface.CreateFont('iphone_balance', {
 	font = 'Montserrat',

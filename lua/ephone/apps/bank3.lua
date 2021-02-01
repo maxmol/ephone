@@ -1,4 +1,4 @@
-local L = include('iphone/translation.lua')
+local L = include('ephone/translation.lua')
 
 App.init = function(window)
 	local panel = iPhone.apps['bank1'].bank_main(window, 3)

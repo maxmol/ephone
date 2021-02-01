@@ -1,4 +1,4 @@
-local L = include('iphone/translation.lua')
+local L = include('ephone/translation.lua')
 
 App.name = L'recents'
 App.icon = 'call_appli_icon'

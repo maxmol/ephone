@@ -1,4 +1,4 @@
-local L = include('iphone/translation.lua')
+local L = include('ephone/translation.lua')
 
 App.hideHomeBar = true
 App.call = true

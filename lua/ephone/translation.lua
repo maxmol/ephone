@@ -8,7 +8,7 @@ if SERVER then
 	end
 end
 
-local lang = include('iphone/languages/' .. iphone_config.lang .. '.lua')
+local lang = include('ephone/languages/' .. iphone_config.lang .. '.lua')
 
 return function(str, ...)
 	local text = lang[str] or str

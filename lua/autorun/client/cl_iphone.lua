@@ -1,5 +1,5 @@
-local iphone_config = include('iphone/config.lua')
-local L = include('iphone/translation.lua')
+local iphone_config = include('ephone/config.lua')
+local L = include('ephone/translation.lua')
 
 surface.CreateFont('iphone_time', {
 	font = 'Calibri',
@@ -527,7 +527,7 @@ for _, file in pairs(file.Find('iphone/apps/*', 'LUA')) do
 	local appId = string.StripExtension(file)
 
 	env.App = iPhone:AddApplication(appId)
-	include('iphone/apps/' .. file)
+	include('ephone/apps/' .. file)
 end
 env.App = nil
 

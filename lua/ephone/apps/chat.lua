@@ -1,4 +1,4 @@
-local L = include('iphone/translation.lua')
+local L = include('ephone/translation.lua')
 
 local addMessage = function(scroll, text, my)
 	if IsValid(scroll) then

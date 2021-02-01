@@ -1,5 +1,5 @@
-local iphone_config = include('iphone/config.lua')
-local L = include('iphone/translation.lua')
+local iphone_config = include('ephone/config.lua')
+local L = include('ephone/translation.lua')
 
 for _, file in pairs(file.Find('iphone/apps/*', 'LUA')) do
 	AddCSLuaFile('iphone/apps/' .. file)
@@ -19,13 +19,13 @@ iPhone = {
 			DDrugs.CallHero(0, ply)
 		end,*/
 	},
-	db = include('iphone/sv/sql.lua'),
+	db = include('ephone/sv/sql.lua'),
 }
 
 iPhone.db.init()
 
-include('iphone/sv/bank.lua')
-include('iphone/sv/store.lua')
+include('ephone/sv/bank.lua')
+include('ephone/sv/store.lua')
 
 local function delmsg(from, to)
 	net.Start('iPhone')

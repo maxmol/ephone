@@ -1,4 +1,4 @@
-local L = include('iphone/translation.lua')
+local L = include('ephone/translation.lua')
 
 local bank_action = function(window, panel, page, action)
 	function panel:Paint(w, h)

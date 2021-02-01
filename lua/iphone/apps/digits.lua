@@ -4,7 +4,7 @@ App.bgColor = color_white
 
 App.init = function(window)
 	local callMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/call_icon.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/call_icon.png', function(mat)
 		callMat = mat
 	end)
 
@@ -39,7 +39,7 @@ App.init = function(window)
 	end
 
 	local backspaceMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/supr_numbericonnew.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/supr_numbericonnew.png', function(mat)
 		backspaceMat = mat
 	end)
 	local btnClear = vgui.Create('DButton', window)
@@ -90,7 +90,7 @@ App.init = function(window)
 		for column = -1, 1 do
 			btnNum = btnNum + 1
 			local iconMat
-			ImgLoader.LoadMaterial('materials/elysion/iphone/' .. btnNum .. '_icon.png', function(mat)
+			iPhone.loadMaterial('materials/elysion/iphone/' .. btnNum .. '_icon.png', function(mat)
 				iconMat = mat
 			end)
 

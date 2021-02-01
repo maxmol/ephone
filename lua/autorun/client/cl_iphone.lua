@@ -68,9 +68,11 @@ surface.CreateFont('iphone_small', {
 	extended = true,
 })
 
+file.CreateDir('ephone')
+
 local circularInit = function(panel, dark)
 	local circle
-	ImgLoader.LoadMaterial('materials/elysion/iphone/' .. (dark and 'player_img' or 'circle') .. '.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/' .. (dark and 'player_img' or 'circle') .. '.png', function(mat)
 		circle = mat
 	end)
 
@@ -105,6 +107,9 @@ iPhone = {--iPhone or {
 			end
 		end
 	end,
+	loadMaterial = function(path, callback)
+		callback(Material(path))
+	end,
 	appOpen = function(self)
 		local startX, startY = self:GetPos()
 		self:SetZPos(self:GetZPos() + 1)
@@ -136,7 +141,7 @@ iPhone = {--iPhone or {
 			--draw.RoundedBoxEx(6 + math.min(42, 42 * (self.closingFraction*4)), 0, 0, w, 64, self.app.bgColor or Color(245, 245, 245), true, true, false, false)
 
 			if not self.app.noTitle and self.app.name then
-				draw.SimpleText(self.app.name, 'iphone_title', 16, 20, Color(16, 16, 16, (1 - self.closingFraction*2.5) * 255))
+				draw.SimpleText(self.app.name, 'iphone_title', 16, 20, Color(16, 16, 16, (1 - self.closingFraction * 2.5) * 255))
 			end
 		end
 
@@ -243,12 +248,12 @@ iPhone = {--iPhone or {
 			iPhone.panel = f
 	
 			local bgMat
-			ImgLoader.LoadMaterial('materials/elysion/iphone/BACKGROUNDTEST.png', function(mat)
+			iPhone.loadMaterial('materials/elysion/iphone/BACKGROUNDTEST.png', function(mat)
 				bgMat = mat
 			end)
 
 			local bgWhiteMat
-			ImgLoader.LoadMaterial('materials/elysion/iphone/whitebackground.png', function(mat)
+			iPhone.loadMaterial('materials/elysion/iphone/whitebackground.png', function(mat)
 				bgWhiteMat = mat
 			end)
 
@@ -267,8 +272,9 @@ iPhone = {--iPhone or {
 					surface.DrawTexturedRect(0, 0, w, h)
 				end
 
-				local clrMod = 240 - self.openAnimFraction*240
-				draw.SimpleText(os.date('%H:%M', os.time()), 'iphone_time', 50, 17, Color(clrMod, clrMod, clrMod, iPhone.panel:GetAlpha()), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				local clrMod = 240 - self.openAnimFraction * 240
+				draw.SimpleText(os.date(iphone_config.internationalTime and '%H:%M' or '%I:%M', os.time()),
+					'iphone_time', 50, 17, Color(clrMod, clrMod, clrMod, iPhone.panel:GetAlpha()), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 			end
 
 			for i, widget in pairs(iPhone.widgets) do
@@ -279,7 +285,7 @@ iPhone = {--iPhone or {
 				b.widget = widget
 	
 				local bgMat
-				ImgLoader.LoadMaterial('materials/elysion/iphone/' .. widget.bg .. '.png', function(mat)
+				iPhone.loadMaterial('materials/elysion/iphone/' .. widget.bg .. '.png', function(mat)
 					bgMat = mat
 				end)
 
@@ -331,7 +337,7 @@ iPhone = {--iPhone or {
 				b.app = app
 
 				local appMat
-				ImgLoader.LoadMaterial('materials/elysion/iphone/' .. app.icon .. '.png', function(mat)
+				iPhone.loadMaterial('materials/elysion/iphone/' .. app.icon .. '.png', function(mat)
 					appMat = mat
 				end)
 
@@ -379,16 +385,16 @@ iPhone = {--iPhone or {
 	circularInit = circularInit,
 	messages = {},
 	saveMessages = function()
-		file.Write('iphone_messages.txt', util.TableToJSON(iPhone.messages))
+		file.Write('ephone/iphone_messages' .. iPhone.ipCRC .. '.txt', util.TableToJSON(iPhone.messages))
 	end,
 	deepweb_messages = {},
 	call_history = {},
 	saveHistory = function()
-		file.Write('iphone_history.txt', util.TableToJSON(iPhone.call_history))
+		file.Write('ephone/iphone_history' .. iPhone.ipCRC .. '.txt', util.TableToJSON(iPhone.call_history))
 	end,
 	contacts = {},
 	saveContacts = function()
-		file.Write('iphone_contacts.txt', util.TableToJSON(iPhone.contacts))
+		file.Write('ephone/iphone_contacts' .. iPhone.ipCRC .. '.txt', util.TableToJSON(iPhone.contacts))
 	end,
 	AddApplication = function(self, id)
 		local newApp = {}
@@ -446,6 +452,7 @@ iPhone = {--iPhone or {
 			surface.PlaySound('iphone/msg.mp3')
 		end
 	end,
+	ipCRC = util.CRC(game.GetIPAddress()),
 }
 
 iPhone.apps = {
@@ -475,16 +482,16 @@ surface.CreateFont('iphone_loup', {
 
 iPhone.widgets = {}
 
-if iphone_config.store_widget_link and iphone_config.store_widget_link ~= '' then
+if iphone_config.website_widget_link and iphone_config.website_widget_link ~= '' then
 	table.insert(iPhone.widgets, {
 		bg = 'widget_store',
-		name = L'store',
+		name = iphone_config.website_widget_name,
 		pos_x = 24,
 		pos_y = 200,
 		w = 139,
 		h = 149,
 		open = function()
-			gui.OpenURL(iphone_config.store_widget_link)
+			gui.OpenURL(iphone_config.website_widget_link)
 		end
 	})
 end
@@ -503,16 +510,16 @@ if iphone_config.discord_widget_link and iphone_config.discord_widget_link ~= ''
 	})
 end
 
-if file.Exists('iphone_messages.txt', 'DATA') then
-	iPhone.messages = util.JSONToTable(file.Read('iphone_messages.txt', 'DATA'))
+if file.Exists('ephone/iphone_messages' .. iPhone.ipCRC .. '.txt', 'DATA') then
+	iPhone.messages = util.JSONToTable(file.Read('ephone/iphone_messages' .. iPhone.ipCRC .. '.txt', 'DATA'))
 end
 
-if file.Exists('iphone_history.txt', 'DATA') then
-	iPhone.call_history = util.JSONToTable(file.Read('iphone_history.txt', 'DATA'))
+if file.Exists('ephone/iphone_history' .. iPhone.ipCRC .. '.txt', 'DATA') then
+	iPhone.call_history = util.JSONToTable(file.Read('ephone/iphone_history' .. iPhone.ipCRC .. '.txt', 'DATA'))
 end
 
-if file.Exists('iphone_contacts.txt', 'DATA') then
-	iPhone.contacts = util.JSONToTable(file.Read('iphone_contacts.txt', 'DATA'))
+if file.Exists('ephone/iphone_contacts' .. iPhone.ipCRC .. '.txt', 'DATA') then
+	iPhone.contacts = util.JSONToTable(file.Read('ephone/iphone_contacts' .. iPhone.ipCRC .. '.txt', 'DATA'))
 end
 
 local env = getfenv()

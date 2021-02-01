@@ -80,7 +80,7 @@ local bank_action = function(window, panel, page, action)
 	end
 
 	local btnMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/top_button.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/top_button.png', function(mat)
 		btnMat = mat
 	end)
 

@@ -9,7 +9,7 @@ App.init = function(window)
 	local scroll = iPhone.apps['contacts'].base(window)
 
 	local plusMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/addconstact_icon.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/addconstact_icon.png', function(mat)
 		plusMat = mat
 	end)
 
@@ -80,7 +80,7 @@ App.init = function(window)
 			b.ava = ava
 		/*elseif id == 'Sergay' then
 			local sergay
-			ImgLoader.LoadMaterial('materials/elysion/iphone/sergay.png', function(mat)
+			iPhone.loadMaterial('materials/elysion/iphone/sergay.png', function(mat)
 				sergay = mat
 			end)
 

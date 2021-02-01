@@ -22,12 +22,12 @@ end
 
 App.init = function(window)
 	local bgMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/BACKGROUNDTEST2.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/BACKGROUNDTEST2.png', function(mat)
 		bgMat = mat
 	end)
 
 	local btnMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/call_icon_refuse.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/call_icon_refuse.png', function(mat)
 		btnMat = mat
 	end)
 

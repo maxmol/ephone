@@ -11,11 +11,11 @@ local createSlider = function(parent, x, y, callback)
 	slider:SetPos(x, y)
 
 	local offMat, onMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/off_button.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/off_button.png', function(mat)
 		offMat = mat
 	end)
 
-	ImgLoader.LoadMaterial('materials/elysion/iphone/on_button.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/on_button.png', function(mat)
 		onMat = mat
 	end)
 	

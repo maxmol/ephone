@@ -2,7 +2,7 @@ local L = include('iphone/translation.lua')
 
 App.init = function(window, item)
 	local bgMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/storebackground.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/storebackground.png', function(mat)
 		bgMat = mat
 	end)
 

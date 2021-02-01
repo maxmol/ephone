@@ -34,7 +34,7 @@ App.init = function(window)
 	name:SetColor(Color(16, 16, 16))
 
 	local backMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/back_smsicon.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/back_smsicon.png', function(mat)
 		backMat = mat
 	end)
 
@@ -72,7 +72,7 @@ App.init = function(window)
 		iPhone.circularInit(ava)
 	/*elseif iPhone.playerMessaging == 'Sergay' then
 		local sergay
-		ImgLoader.LoadMaterial('materials/elysion/iphone/sergay.png', function(mat)
+		iPhone.loadMaterial('materials/elysion/iphone/sergay.png', function(mat)
 			sergay = mat
 		end)
 

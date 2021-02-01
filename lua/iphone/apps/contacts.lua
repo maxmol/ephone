@@ -69,7 +69,7 @@ local base = function(window, noBackground, searchPaint)
 	search:SetSize(350-32, 42)
 
 	local searchIcon
-	ImgLoader.LoadMaterial('materials/elysion/iphone/recherche_messageicon.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/recherche_messageicon.png', function(mat)
 		searchIcon = mat
 	end)
 
@@ -132,10 +132,10 @@ App.base = base
 local createBottomButtons = function(window, current)
 	local recents = vgui.Create('DButton', window)
 
-	ImgLoader.LoadMaterial('materials/elysion/iphone/recent_numbericon unused.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/recent_numbericon unused.png', function(mat)
 		recents.mat = mat
 	end)
-	ImgLoader.LoadMaterial('materials/elysion/iphone/recent_numbericon used.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/recent_numbericon used.png', function(mat)
 		recents.matActive = mat
 	end)
 
@@ -167,10 +167,10 @@ local createBottomButtons = function(window, current)
 
 	local contacts = vgui.Create('DButton', window)
 
-	ImgLoader.LoadMaterial('materials/elysion/iphone/contacts_numbericon unused.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/contacts_numbericon unused.png', function(mat)
 		contacts.mat = mat
 	end)
-	ImgLoader.LoadMaterial('materials/elysion/iphone/contacts_numbericon used.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/contacts_numbericon used.png', function(mat)
 		contacts.matActive = mat
 	end)
 
@@ -190,12 +190,12 @@ local createBottomButtons = function(window, current)
 
 	local keys = vgui.Create('DButton', window)
 
-	ImgLoader.LoadMaterial('materials/elysion/iphone/clavier_numbericon unused.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/clavier_numbericon unused.png', function(mat)
 		if IsValid(keys) then
 			keys.mat = mat
 		end
 	end)
-	ImgLoader.LoadMaterial('materials/elysion/iphone/clavier_numbericon used.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/clavier_numbericon used.png', function(mat)
 		if IsValid(keys) then
 			keys.matActive = mat
 		end
@@ -271,7 +271,7 @@ App.init = function(window)
 		return code
 	end
 
-	local contactsTable = iPhone.contacts
+	local contactsTable = table.Copy(iPhone.contacts)
 	if iphone_config.show_online_players_in_contacts then
 		for _, p in ipairs(player.GetAll()) do
 			if p ~= LocalPlayer() then
@@ -283,8 +283,6 @@ App.init = function(window)
 			end
 		end
 	end
-
-	PrintTable(contactsTable)
 
 	table.sort(contactsTable, function(a, b)
 		if not a.name or not b.name then

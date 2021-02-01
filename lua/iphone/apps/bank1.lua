@@ -15,7 +15,7 @@ local bank_main = function(window, page)
 	local bmat = {}
 
 	for i = 1, 3 do
-		ImgLoader.LoadMaterial('materials/elysion/iphone/button_' .. i .. '.png', function(mat)
+		iPhone.loadMaterial('materials/elysion/iphone/button_' .. i .. '.png', function(mat)
 			bmat[i] = mat
 		end)
 	end
@@ -60,7 +60,7 @@ local bank_main = function(window, page)
 	end
 
 	local bgMat
-	ImgLoader.LoadMaterial('materials/elysion/iphone/background.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/background.png', function(mat)
 		bgMat = mat
 	end)
 

@@ -36,12 +36,12 @@ App.init = function(window)
 	scroll.pnlCanvas:DockPadding(16, 8, 16, 0)
 
 	local bigStencil
-	ImgLoader.LoadMaterial('materials/elysion/iphone/big_appicon.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/big_appicon.png', function(mat)
 		bigStencil = mat
 	end)
 
 	local littleStencil
-	ImgLoader.LoadMaterial('materials/elysion/iphone/big_appicon.png', function(mat)
+	iPhone.loadMaterial('materials/elysion/iphone/big_appicon.png', function(mat)
 		littleStencil = mat
 	end)
 
@@ -109,7 +109,7 @@ App.init = function(window)
 				end
 
 				draw.SimpleText(item.name, 'iphone_search', 78, 0, color_black)
-				draw.SimpleText(DarkRP.formatMoney(item.price), 'iphone_search', 78, 30, Color(187, 187, 187))
+				draw.SimpleText(iphone_config.currency_format(item.price), 'iphone_search', 78, 30, Color(187, 187, 187))
 				draw.RoundedBox(14, w - 78, 25, 78, 28, self.Hovered and Color(192, 192, 200) or Color(240, 240, 248))
 				draw.SimpleText(L'open', 'iphone_small', w - 37, 39, Color(75, 137, 233), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 

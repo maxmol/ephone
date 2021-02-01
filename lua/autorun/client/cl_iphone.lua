@@ -523,7 +523,7 @@ if file.Exists('ephone/iphone_contacts' .. iPhone.ipCRC .. '.txt', 'DATA') then
 end
 
 local env = getfenv()
-for _, file in pairs(file.Find('iphone/apps/*', 'LUA')) do
+for _, file in pairs(file.Find('ephone/apps/*', 'LUA')) do
 	local appId = string.StripExtension(file)
 
 	env.App = iPhone:AddApplication(appId)

@@ -2,13 +2,13 @@ iphone_config = {
 	-- time format
 	-- true for international 24-hour clock format
 	-- false for US 12-hour clock format
-	internationalTime = false,
+	internationalTime = true,
 
 	-- if you wish to use Server Website widget, copy the URL for your project's website / store
 	-- ex: "https://google.com",
 	-- if you don't want to use the widget, you can leave this empty
 	website_widget_link = "https://google.com",
-	website_widget_name = 'Donate',
+	website_widget_name = "Donate",
 
 	-- discord link, leave empty to disable the widget
 	discord_widget_link = "https://discord.gg/XXXXXXXX",
@@ -26,8 +26,9 @@ iphone_config = {
 	lang = "en",
 
 	-- use mysqloo (true to use mysql, false for default sqlite)
-	-- if you wish to use mysql, database settings can be found in sql.lua
-	mysql = true,
+	-- if you wish to use mysql, please download and install mysqloo dll!
+	-- database settings can be found in lua/ephone/sql.lua
+	mysql = false,
 
 	-- custom items for the Store app
 	store_items = {
@@ -37,7 +38,7 @@ iphone_config = {
 
 			price = 50,
 			-- image URL, ends with ".png" or ".jpg"
-			icon = "https://i.imgur.com/YSPb4E0.png",
+			icon = "https://i.imgur.com/U0uCgWv.png",
 
 			-- item type, can be "console", "darkrpentity", "weapon" or "custom"
 			type = "custom",
@@ -47,7 +48,7 @@ iphone_config = {
 				buyer:ChatPrint("You have bought the example item!")
 			end,
 		},
-		
+
 		{
 			name = "Example Weapon",
 			price = 100,

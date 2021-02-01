@@ -1,11 +1,11 @@
 local iphone_config = include('ephone/config.lua')
 local L = include('ephone/translation.lua')
 
-for _, file in pairs(file.Find('iphone/apps/*', 'LUA')) do
-	AddCSLuaFile('iphone/apps/' .. file)
+for _, file in pairs(file.Find('ephone/apps/*', 'LUA')) do
+	AddCSLuaFile('ephone/apps/' .. file)
 end
 
-AddCSLuaFile('iphone/config.lua')
+AddCSLuaFile('ephone/config.lua')
 
 util.AddNetworkString('iPhone')
 

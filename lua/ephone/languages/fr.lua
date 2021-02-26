@@ -37,4 +37,5 @@ return {
 	open = 'VOIR',
 	buy = 'ACHETER',
 	online_players = 'Joueurs en ligne',
+	cancel = 'Annuler',
 }

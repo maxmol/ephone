@@ -2,7 +2,7 @@ local L = include('ephone/translation.lua')
 
 App.name = L'settings'
 App.icon = 'settings_icon'
-App.pos_x = 24
+App.pos_x = 178
 App.pos_y = 80
 
 local createSlider = function(parent, x, y, callback)

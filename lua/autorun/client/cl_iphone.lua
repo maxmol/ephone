@@ -314,7 +314,7 @@ iPhone = {--iPhone or {
 						self.widget.paint(self, w, h, anim)
 					end
 
-					draw.SimpleText(self.widget.name, 'iphone_appname', w/2, h + anim, color_white, TEXT_ALIGN_CENTER)
+					draw.SimpleText(self.widget.name, 'iphone_appname', w/2, h + 5 + anim, color_white, TEXT_ALIGN_CENTER)
 
 					return true
 				end

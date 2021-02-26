@@ -37,4 +37,5 @@ return {
 	open = 'OPEN',
 	buy = 'BUY',
 	online_players = 'Online Players',
+	cancel = 'Cancel',
 }

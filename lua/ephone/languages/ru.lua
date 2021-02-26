@@ -37,4 +37,5 @@ return {
 	open = 'Открыть',
 	buy = 'КУПИТЬ',
 	online_players = 'Игроки на сервере',
+	cancel = 'Отменить',
 }

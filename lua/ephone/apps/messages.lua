@@ -3,7 +3,7 @@ local L = include('ephone/translation.lua')
 App.name = L'messages'
 App.icon = 'sms_appli_icon'
 App.pos_x = 138
-App.pos_y = 628
+App.pos_y = 630
 
 App.init = function(window)
 	local scroll = iPhone.apps['contacts'].base(window)

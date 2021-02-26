@@ -3,7 +3,7 @@ local L = include('ephone/translation.lua')
 App.name = L'recents'
 App.icon = 'call_appli_icon'
 App.pos_x = 60
-App.pos_y = 628
+App.pos_y = 630
 App.bgColor = color_white
 
 local createSwitch = function(parent, x, y, offText, onText, callback)

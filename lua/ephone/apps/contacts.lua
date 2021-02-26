@@ -3,7 +3,7 @@ local L = include('ephone/translation.lua')
 App.name = L'contacts'
 App.icon = 'contact_appli_icon'
 App.pos_x = 216
-App.pos_y = 628
+App.pos_y = 630
 
 local spawnScroll = function(window, noBackground, yPos, bottomMargin)
 	local scroll = vgui.Create('DScrollPanel', window)

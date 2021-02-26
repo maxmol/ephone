@@ -4,7 +4,7 @@ file.CreateDir('iphone_images')
 
 App.name = L'store'
 App.icon = 'store_icon'
-App.pos_x = 178
+App.pos_x = 24
 App.pos_y = 80
 App.bgColor = color_white
 

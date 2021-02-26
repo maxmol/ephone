@@ -7,8 +7,8 @@ App.init = function(window, contact, ply)
 	end)
 
 	local ava = vgui.Create('AvatarImage', window)
-	ava:SetSize(140, 140)
-	ava:SetPos(window:GetWide()/2 - 70, 60)
+	ava:SetSize(150, 150)
+	ava:SetPos(window:GetWide()/2 - 75, 60)
 	ava:SetPlayer(ply or NULL, 128)
 	ava:SetPaintedManually(true)
 
@@ -34,7 +34,7 @@ App.init = function(window, contact, ply)
 		iPhone.appSwitch(window, iPhone.apps['contacts'])
 	end
 
-	local addNumber = vgui.Create('DButton', window)
+	/*local addNumber = vgui.Create('DButton', window)
 	addNumber:SetSize(350, 42)
 	addNumber:SetPos(0, 399 - 28)
 	function addNumber:Paint(w, h)
@@ -48,13 +48,15 @@ App.init = function(window, contact, ply)
 		return true
 	end
 
-	addNumber.DoClick = save.DoClick
+	addNumber.DoClick = save.DoClick*/
 
 	local cancel = vgui.Create('DButton', window)
 	cancel:SetSize(70, 23)
 	cancel:SetPos(9, 42  - 28)
 	function cancel:Paint(w, h)
 		iPhone.cursorUpdate(self)
+
+		draw.SimpleText(L'cancel', 'iphone_search', w / 2, h / 2, Color(47, 125, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 
 		if self.Hovered then
 			surface.SetDrawColor(0, 0, 0, 20)

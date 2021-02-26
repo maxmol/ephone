@@ -1,9 +1,9 @@
 local mysql_config = {
-	host = "node.elysion.games",
-	port = "3306",
-	database = "iphonetest",
-	username = "darkrp",
-	password = "rH2DMxBD2f4822by"
+	host = "ip_or_domain",
+	port = "port_number",
+	database = "database_name",
+	username = "your_mysql_username",
+	password = "your_mysql_password"
 }
 
 local mysql

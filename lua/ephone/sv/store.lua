@@ -1,15 +1,14 @@
 util.AddNetworkString('iphone_store')
 
--- from DarkRP
+-- defaultSpawn is from DarkRP
 -- https://github.com/FPtje/DarkRP/blob/master/gamemode/modules/base/sh_createitems.lua
 local function defaultSpawn(ply, tr, tblE)
 	local ent = ents.Create(tblE.ent)
 
-	if not ent:IsValid() then error("Entity '" .. tblE.ent .. "' does not exist or is not valid.") end
+	if not IsValid(ent) then error("Entity '" .. tblE.ent .. "' does not exist or is not valid.") end
 	if ent.Setowning_ent then ent:Setowning_ent(ply) end
 
 	ent:SetPos(tr.HitPos)
-	-- These must be set before :Spawn()
 	ent.SID = ply.SID
 	ent.allowed = tblE.allowed
 	ent.DarkRPItem = tblE
@@ -19,7 +18,7 @@ local function defaultSpawn(ply, tr, tblE)
 	DarkRP.placeEntity(ent, tr, ply)
 
 	local phys = ent:GetPhysicsObject()
-	if phys:IsValid() then phys:Wake() end
+	if IsValid(phys) then phys:Wake() end
 
 	return ent
 end

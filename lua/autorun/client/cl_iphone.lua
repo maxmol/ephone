@@ -505,7 +505,7 @@ if iphone_config.discord_widget_link and iphone_config.discord_widget_link ~= ''
 		w = 139,
 		h = 149,
 		open = function()
-			gui.OpenURL(iphone_config.store_widget_link)
+			gui.OpenURL(iphone_config.discord_widget_link)
 		end
 	})
 end

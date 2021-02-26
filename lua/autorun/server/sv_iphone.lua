@@ -5,6 +5,8 @@ for _, file in pairs(file.Find('ephone/apps/*', 'LUA')) do
 	AddCSLuaFile('ephone/apps/' .. file)
 end
 
+resource.AddWorkshop('2381066855')
+
 AddCSLuaFile('ephone/config.lua')
 
 util.AddNetworkString('iPhone')

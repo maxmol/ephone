@@ -19,7 +19,8 @@ iphone_config = {
 
 	-- here you can disable applications from showing on the home screen, use the file name (iphone/apps/)
 	disabled_apps = {
-		"maps",
+		-- "bank1",
+		-- "store",
 	},
 
 	-- avaliable languages: 'en', 'fr', 'ru'

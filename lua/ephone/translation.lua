@@ -1,10 +1,10 @@
 if SERVER then
 	AddCSLuaFile()
 
-	local lang_files = file.Find('iphone/languages/*', 'LUA')
+	local lang_files = file.Find('ephone/languages/*', 'LUA')
 
 	for _, f in ipairs(lang_files) do
-		AddCSLuaFile('iphone/languages/' .. f)
+		AddCSLuaFile('ephone/languages/' .. f)
 	end
 end
 

@@ -96,7 +96,7 @@ App.init = function(window)
 	function panel:Paint(w, h)
 		draw.SimpleText(L'bank_balance', 'iphone_medium', w / 2, 20, color_black, TEXT_ALIGN_CENTER)
 		local bankMoneyNumber = tonumber(bankMoney)
-		draw.SimpleText(bankMoneyNumber and DarkRP.formatMoney(bankMoneyNumber) or bankMoney, 'iphone_balance', w / 2, 60, Color(22, 177, 230), TEXT_ALIGN_CENTER)
+		draw.SimpleText(bankMoneyNumber and iphone_config.currency_format(bankMoneyNumber) or bankMoney, 'iphone_balance', w / 2, 60, Color(22, 177, 230), TEXT_ALIGN_CENTER)
 	end
 end
 

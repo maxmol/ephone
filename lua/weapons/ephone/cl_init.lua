@@ -15,7 +15,7 @@ SWEP.BobScale = 0.05
 
 function SWEP:Holster()
 	if self.Owner ~= LocalPlayer() then return end
-	--if iPhone.panel then iPhone.panel:Remove() end -- remove
+	if IsValid(iPhone.panel) then iPhone.panel:SetVisible(false) end
 end
 
 local cursor_x, cursor_y = 0, 0
@@ -27,7 +27,7 @@ local function cursorUpdate(panel, custom_w, custom_h)
 	local w, h = panel:GetSize()
 	w = custom_w or w
 	h = custom_h or h
-	
+
 	local hovered = cursor_x > x and cursor_y > y and cursor_x < x + w and cursor_y < y + h
 	if hovered then
 		last_hovered_panel = panel
@@ -56,19 +56,19 @@ function SWEP:PostDrawViewModel(vm)
 	local ang = vm:GetAngles()
 	local realAng = Angle(ang)
 
-	
+
 	ang:RotateAroundAxis(ang:Right(), 68)
 	ang:RotateAroundAxis(ang:Forward(), -13.5)
 	ang:RotateAroundAxis(ang:Up(), -94.1)
-	
-	local pos = vm:GetPos() + 
+
+	local pos = vm:GetPos() +
 		realAng:Up() * 0.18 + realAng:Right() * 4.05 + realAng:Forward() * 21.7
-	
+
 	local size = 0.0107
 
-	local cursorWorldPos = util.IntersectRayWithPlane(LocalPlayer():GetShootPos(), 
+	local cursorWorldPos = util.IntersectRayWithPlane(LocalPlayer():GetShootPos(),
 		gui.ScreenToVector(gui.MousePos()), pos, ang:Up())
-	
+
 	if not cursorWorldPos then return end
 	local cursor_pos = WorldToLocal(cursorWorldPos, Angle(0,0,0), pos, ang)
 
@@ -87,6 +87,7 @@ function SWEP:PostDrawViewModel(vm)
 	end
 
 	iPhone.createScreen()
+	iPhone.panel:SetVisible(true)
 	cam.Start3D2D(pos, ang, size)
 		iPhone.panel:PaintManual()
 	cam.End3D2D()
@@ -107,7 +108,7 @@ function SWEP:PrimaryAttack()
 
 	gui.EnableScreenClicker(true)
 	RestoreCursorPosition()
-	
+
 	if IsValid(iPhone.panel2d) then
 		iPhone.panel2d:Remove()
 	end
@@ -123,8 +124,8 @@ function SWEP:PrimaryAttack()
 
 	function p:OnMousePressed(code)
 		if IsValid(last_hovered_panel) and last_hovered_panel.Hovered then
-			if last_hovered_panel.OnMousePressed and not last_hovered_panel.CursorDisabled then 
-				last_hovered_panel:OnMousePressed(code) 
+			if last_hovered_panel.OnMousePressed and not last_hovered_panel.CursorDisabled then
+				last_hovered_panel:OnMousePressed(code)
 			end
 		else
 			RememberCursorPosition()
@@ -135,8 +136,8 @@ function SWEP:PrimaryAttack()
 
 	function p:OnMouseReleased(code)
 		if IsValid(last_hovered_panel) and last_hovered_panel.Hovered then
-			if last_hovered_panel.OnMouseReleased and not last_hovered_panel.CursorDisabled then 
-				last_hovered_panel:OnMouseReleased(code) 
+			if last_hovered_panel.OnMouseReleased and not last_hovered_panel.CursorDisabled then
+				last_hovered_panel:OnMouseReleased(code)
 			end
 		end
 	end
@@ -146,9 +147,9 @@ function SWEP:PrimaryAttack()
 			local p = last_hovered_panel
 			while true do
 				if not IsValid(p) then break end
-				if p.OnMouseWheeled then 
-					p:OnMouseWheeled(wheel) 
-					break 
+				if p.OnMouseWheeled then
+					p:OnMouseWheeled(wheel)
+					break
 				end
 				p = p:GetParent()
 			end

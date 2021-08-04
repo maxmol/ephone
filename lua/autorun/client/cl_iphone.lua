@@ -245,6 +245,7 @@ iPhone = {--iPhone or {
 			f.openAnimFraction = 0
 			f:SetAlpha(0)
 			f:AlphaTo(255, 0.15, 0.4)
+			f:SetPos(8, 50)
 			iPhone.panel = f
 	
 			local bgMat

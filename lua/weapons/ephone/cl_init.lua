@@ -24,6 +24,8 @@ local function cursorUpdate(panel, custom_w, custom_h)
 	if not IsValid(iPhone.panel2d) then return end
 
 	local x, y = panel:LocalToScreen(0, 0)
+	x = x - iPhone.panel.X
+	y = y - iPhone.panel.Y
 	local w, h = panel:GetSize()
 	w = custom_w or w
 	h = custom_h or h
@@ -88,9 +90,15 @@ function SWEP:PostDrawViewModel(vm)
 
 	iPhone.createScreen()
 	iPhone.panel:SetVisible(true)
-	cam.Start3D2D(pos, ang, size)
+
+	local ephone_screen_rendertarget = GetRenderTargetEx("ephone_screen", 366, 789, RT_SIZE_OFFSCREEN, MATERIAL_RT_DEPTH_NONE, 0, 0, IMAGE_FORMAT_RGBA8888)
+	Material('models/iphone-xs/mat18'):SetTexture("$basetexture", ephone_screen_rendertarget:GetName())
+
+	render.PushRenderTarget(ephone_screen_rendertarget)
+	cam.Start2D()
 		iPhone.panel:PaintManual()
-	cam.End3D2D()
+	cam.End2D()
+	render.PopRenderTarget()
 
 	gui.MouseX = oldMouseX
 	gui.MouseY = oldMouseY

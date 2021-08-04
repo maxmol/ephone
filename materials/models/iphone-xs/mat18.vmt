@@ -1,4 +1,4 @@
-"VertexlitGeneric"
+"UnlitGeneric"
 {
 	"$basetexture" "models/iphone-xs/mat15"
 }

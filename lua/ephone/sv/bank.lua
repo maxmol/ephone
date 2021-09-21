@@ -3,8 +3,6 @@ util.AddNetworkString('iphone_bank')
 net.Receive('iphone_bank', function(len, ply)
 	if ply.iphone_bank_cooldown and ply.iphone_bank_cooldown > CurTime() then return end
 
-	ply.iphone_bank_cooldown = CurTime() + 1
-
 	local operation = net.ReadUInt(3)
 	if operation == 1 then -- get balance
 		iPhone.db.getBankMoney(ply, function(money)
@@ -29,6 +27,7 @@ net.Receive('iphone_bank', function(len, ply)
 				end
 			end
 		end)
+		ply.iphone_bank_cooldown = CurTime() + 1
 	elseif operation == 3 then -- deposit
 		local amt = net.ReadUInt(32)
 		if not ply:canAfford(amt) then
@@ -45,5 +44,6 @@ net.Receive('iphone_bank', function(len, ply)
 				end
 			end
 		end)
+		ply.iphone_bank_cooldown = CurTime() + 1
 	end
 end)
